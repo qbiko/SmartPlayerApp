@@ -8,11 +8,11 @@
     <string name="action_sign_in">Zaloguj</string>
     <string name="action_sign_in_short">Zarejestruj</string>
     <string name="error_invalid_email">Podany email jest nieprawidłowy</string>
-    <string name="error_invalid_password">Podane hasło jest za krótkie</string>
     <string name="error_incorrect_password">Podane hasło jest niepoprawne</string>
     <string name="error_field_required">To pole jest wymagane</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+    <string name="login_failed">Logowanie nie powiodło się</string>
+    <string name="login_loading">Logowanie...</string>
+
+
     <string name="field_description">Boisko</string>
 </resources>
