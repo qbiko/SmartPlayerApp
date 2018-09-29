@@ -6,78 +6,110 @@
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity"
     android:background="@color/colorBackground"
-    android:paddingHorizontal="40dp"
-    android:paddingVertical="20dp">
-
+    android:paddingVertical="20dp"
+    android:gravity="center"
+    android:id="@+id/main_container">
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:orientation="vertical"
-        android:layout_marginRight="40dp">
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:layout_marginRight="40dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:layout_marginBottom="20dp">
+
+                <ImageView
+                    android:id="@+id/field_view"
+                    android:layout_width="455dp"
+                    android:layout_height="300dp"
+                    android:contentDescription="@string/field_description"
+                    app:srcCompat="@drawable/field" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/start_stop_event_and_player_details_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:id="@+id/start_stop_event_container"
+                    android:layout_width="200dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="start"
+                    android:layout_marginRight="50dp"
+                    android:background="@color/colorSecondaryBackground"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/start_stop_event_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:layout_above="@+id/start_stop_event_button"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginBottom="15dp"
+                        android:text="@string/start_event"
+                        android:textColor="@color/colorPrimaryButtonText" />
+
+                    <ImageButton
+                        android:id="@+id/start_stop_event_button"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="bottom"
+                        android:background="@drawable/start_event_bg" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/player_details_container"
+                    android:layout_width="200dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="end"
+                    android:background="@color/colorSecondaryBackground">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"></LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"></LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:layout_marginBottom="20dp">
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="455dp"
-                android:layout_height="300dp"
-                android:contentDescription="@string/field_description"
-                app:srcCompat="@drawable/field" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:orientation="horizontal">
+            android:layout_gravity="end"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="200dp"
-                android:layout_height="150dp"
-                android:layout_gravity="start"
+                android:layout_height="200dp"
                 android:background="@color/colorSecondaryBackground"
-                android:layout_marginRight="50dp">
+                android:layout_marginBottom="20dp">
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="200dp"
-                android:layout_height="150dp"
-                android:layout_gravity="end"
+                android:layout_height="250dp"
                 android:background="@color/colorSecondaryBackground">
-
+                <ListView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/players_list_view"></ListView>
             </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:background="@color/colorSecondaryBackground"
-            android:layout_marginBottom="20dp">
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="200dp"
-            android:layout_height="250dp"
-            android:background="@color/colorSecondaryBackground">
-            <ListView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/players_list_view"></ListView>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -12,6 +12,8 @@
     <string name="error_field_required">To pole jest wymagane</string>
     <string name="login_failed">Logowanie nie powiodło się</string>
     <string name="login_loading">Logowanie...</string>
+    <string name="start_event">Start rozgrywki</string>
+    <string name="stop_event">Zatrzymanie rozgrywki</string>
 
 
     <string name="field_description">Boisko</string>
