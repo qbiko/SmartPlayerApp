@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
 
     private int FIELD_IMAGE_WIDTH_IN_PIXELS = 1061;
     private int FIELD_IMAGE_HEIGHT_IN_PIXELS = 701;
+    private int FIELD_CENTER_IMAGE_WIDTH_IN_PIXELS = 345;
+    private int FIELD_CENTER_IMAGE_HEIGHT_IN_PIXELS = 167;
 
     private SparseArray<Player> dummyPlayers;
 
@@ -31,11 +34,17 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.main_container)
     LinearLayout _mainContainer;
     @BindView(R.id.start_stop_event_and_player_details_container)
-    RelativeLayout _startStopEventAndPlayerDetailsContainer;
+    LinearLayout _startStopEventAndPlayerDetailsContainer;
     @BindView(R.id.start_stop_event_container)
     RelativeLayout _startStopEventContainer;
     @BindView(R.id.player_details_container)
     LinearLayout _playerDetailsContainer;
+    @BindView(R.id.break_view)
+    View _breakView;
+    @BindView(R.id.right_panel)
+    LinearLayout _rightPanel;
+    @BindView(R.id.field_center_image_view)
+    ImageView _fieldCenterImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,9 +83,9 @@ public class MainActivity extends AppCompatActivity {
 
         //set dynamically size of field ImageView
         double fieldViewHeightDouble = screenHeight/2;
-        double compressPercent = fieldViewHeightDouble/FIELD_IMAGE_HEIGHT_IN_PIXELS;
+        double compressPercentOfFieldImageSize = fieldViewHeightDouble/FIELD_IMAGE_HEIGHT_IN_PIXELS;
         int fieldViewHeight = (int)fieldViewHeightDouble;
-        int fieldViewWidth = (int)(FIELD_IMAGE_WIDTH_IN_PIXELS*compressPercent);
+        int fieldViewWidth = (int)(FIELD_IMAGE_WIDTH_IN_PIXELS*compressPercentOfFieldImageSize);
 
         _fieldView.getLayoutParams().width = fieldViewWidth;
         _fieldView.getLayoutParams().height = fieldViewHeight;
@@ -84,7 +93,9 @@ public class MainActivity extends AppCompatActivity {
         //set dynamically width of left and right blocks under field ImageView
         _startStopEventAndPlayerDetailsContainer.getLayoutParams().width = fieldViewWidth;
 
-        double containerMargin = fieldViewWidth/100;
+        double containerMargin = fieldViewWidth*5/100;
+
+        _breakView.getLayoutParams().width = (int)containerMargin;
 
         _startStopEventContainer.getLayoutParams().width = (int)(fieldViewWidth*3/8 -
                 containerMargin);
@@ -92,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
         _playerDetailsContainer.getLayoutParams().width = fieldViewWidth -
                 _startStopEventContainer.getLayoutParams().width;
 
+        //set dynamically size of field center ImageView
+        //TODO
 
     }
 }

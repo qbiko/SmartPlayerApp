@@ -12,9 +12,13 @@
     <string name="error_field_required">To pole jest wymagane</string>
     <string name="login_failed">Logowanie nie powiodło się</string>
     <string name="login_loading">Logowanie...</string>
+
+    <!-- Strings related to main activity -->
     <string name="start_event">Start rozgrywki</string>
     <string name="stop_event">Zatrzymanie rozgrywki</string>
+    <string name="field_description">Boisko obrazek</string>
+    <string name="choose_field">Wybierz boisko</string>
+    <string name="field_text_in_choose_field_panel">boisko:</string>
+    <string name="field_center_description">Środek boiska obrazek</string>
 
-
-    <string name="field_description">Boisko</string>
 </resources>

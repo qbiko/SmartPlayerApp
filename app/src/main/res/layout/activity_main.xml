@@ -46,8 +46,6 @@
                     android:id="@+id/start_stop_event_container"
                     android:layout_width="200dp"
                     android:layout_height="match_parent"
-                    android:layout_gravity="start"
-                    android:layout_marginRight="50dp"
                     android:background="@color/colorSecondaryBackground"
                     android:gravity="center">
 
@@ -70,12 +68,15 @@
                         android:background="@drawable/start_event_bg" />
 
                 </RelativeLayout>
+                <View
+                    android:id="@+id/break_view"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent" />
 
                 <LinearLayout
                     android:id="@+id/player_details_container"
                     android:layout_width="200dp"
                     android:layout_height="match_parent"
-                    android:layout_gravity="end"
                     android:background="@color/colorSecondaryBackground">
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -88,18 +89,68 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/right_panel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:orientation="vertical">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="200dp"
                 android:layout_height="200dp"
-                android:background="@color/colorSecondaryBackground"
-                android:layout_marginBottom="20dp">
+                android:layout_marginBottom="20dp"
+                android:background="@color/colorSecondaryBackground">
 
-            </LinearLayout>
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@id/choose_field_button">
+                    <ImageView
+                        android:id="@+id/field_center_image_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/field_center"
+                        android:contentDescription="@string/field_center_description"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentTop="true">
+                    </ImageView>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/field_text_in_choose_field_panel"
+                            android:textColor="@color/colorPrimaryButtonText" />
+
+                        <TextView
+                            android:id="@+id/field_name_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="CSA PG"
+                            android:textColor="@color/colorPrimaryButtonText" />
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <Button
+                    android:id="@+id/choose_field_button"
+                    style="?android:textAppearanceSmall"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@color/colorPrimaryButton"
+                    android:text="@string/choose_field"
+                    android:textColor="@color/colorPrimaryButtonText"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="200dp"
