@@ -6,6 +6,7 @@ import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -20,10 +21,10 @@ import pl.smartplayer.smartplayerapp.utils.Player;
 
 public class MainActivity extends AppCompatActivity {
 
-    private int FIELD_IMAGE_WIDTH_IN_PIXELS = 1061;
-    private int FIELD_IMAGE_HEIGHT_IN_PIXELS = 701;
-    private int FIELD_CENTER_IMAGE_WIDTH_IN_PIXELS = 345;
-    private int FIELD_CENTER_IMAGE_HEIGHT_IN_PIXELS = 167;
+    private double FIELD_IMAGE_WIDTH_IN_PIXELS = 1061.0;
+    private double FIELD_IMAGE_HEIGHT_IN_PIXELS = 701.0;
+    private double FIELD_CENTER_IMAGE_WIDTH_IN_PIXELS = 345.0;
+    private double FIELD_CENTER_IMAGE_HEIGHT_IN_PIXELS = 167.0;
 
     private SparseArray<Player> dummyPlayers;
 
@@ -45,6 +46,18 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout _rightPanel;
     @BindView(R.id.field_center_image_view)
     ImageView _fieldCenterImageView;
+    @BindView(R.id.field_center_container)
+    RelativeLayout _fieldCenterContainer;
+    @BindView(R.id.choose_field_container)
+    RelativeLayout _chooseFieldContainer;
+    @BindView(R.id.space_between_choose_field_and_player_list)
+    View _spaceBetweenChooseFieldAndPlayerList;
+    @BindView(R.id.players_list_container)
+    LinearLayout _playersListContainer;
+    @BindView(R.id.add_player_button)
+    ImageButton _addPlayerButton;
+    @BindView(R.id.add_player_button_container)
+    LinearLayout _addPlayerButtonContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +117,33 @@ public class MainActivity extends AppCompatActivity {
                 _startStopEventContainer.getLayoutParams().width;
 
         //set dynamically size of field center ImageView
-        //TODO
+        double fieldCenterImageViewWidthDouble = screenWidth/5.0;
+        double compressPercentOfFieldCenterImageSize =
+                fieldCenterImageViewWidthDouble/FIELD_CENTER_IMAGE_WIDTH_IN_PIXELS;
+        int fieldCenterViewWidth = (int)fieldCenterImageViewWidthDouble;
+        int fieldCenterViewHeight = (int)
+                (FIELD_CENTER_IMAGE_HEIGHT_IN_PIXELS*compressPercentOfFieldCenterImageSize);
+        _rightPanel.getLayoutParams().width = fieldCenterViewWidth;
+        _fieldCenterContainer.getLayoutParams().height = fieldCenterViewHeight;
+
+        _chooseFieldContainer.getLayoutParams().height =
+                (int)(fieldCenterViewHeight+fieldCenterViewHeight/1.2);
+
+        //set dynamically size of players list container and contained in this other elements
+        int mainContainerHeight = screenHeight-2*verticalPadding;
+
+        int playerListContainerHeight = mainContainerHeight - _chooseFieldContainer
+                .getLayoutParams().height - verticalPadding;
+
+        _spaceBetweenChooseFieldAndPlayerList.getLayoutParams().height = verticalPadding;
+
+        _playersListContainer.getLayoutParams().height = playerListContainerHeight;
+
+        _playersListView.getLayoutParams().height = playerListContainerHeight*5/10;
+
+        //add button size and padding
+        _addPlayerButtonContainer.getLayoutParams().height = playerListContainerHeight*3/10;
+
 
     }
 }

@@ -20,5 +20,7 @@
     <string name="choose_field">Wybierz boisko</string>
     <string name="field_text_in_choose_field_panel">boisko:</string>
     <string name="field_center_description">Środek boiska obrazek</string>
+    <string name="players">Zawodnicy</string>
+    <string name="add_player_description">Dodaj zawodnika obrazek</string>
 
 </resources>
