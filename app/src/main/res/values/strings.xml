@@ -23,4 +23,14 @@
     <string name="players">Zawodnicy</string>
     <string name="add_player_description">Dodaj zawodnika obrazek</string>
 
+    <!-- Strings related to player details -->
+    <string name="weight">Waga:</string>
+    <string name="height">Wzrost:</string>
+    <string name="age">Wiek:</string>
+    <string name="weight_measure">kg</string>
+    <string name="height_measure">cm</string>
+    <string name="distance">Dystans:</string>
+    <string name="distance_measure">km</string>
+
+
 </resources>

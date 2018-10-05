@@ -9,4 +9,5 @@
     <color name="colorPrimaryButtonText">#FFFFFF</color>
     <color name="colorInputFill">#F2F2F2</color>
     <color name="colorInputText">#b9b9b9</color>
+    <color name="colorPressed">#fc4513</color>
 </resources>

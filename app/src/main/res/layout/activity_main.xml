@@ -79,15 +79,151 @@
                     android:id="@+id/player_details_container"
                     android:layout_width="200dp"
                     android:layout_height="match_parent"
-                    android:background="@color/colorSecondaryBackground">
+                    android:background="@color/colorSecondaryBackground"
+                    android:paddingVertical="5dp">
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"></LinearLayout>
+                        android:id="@+id/player_details_container_left_block"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_gravity="left">
+                        <TextView
+                            android:id="@+id/player_name_text_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAlignment="center"
+                            android:text="Kamil Glik"
+                            android:textSize="18dp"
+                            android:textStyle="bold"
+                            android:textColor="@color/colorPrimaryButtonText"/>
+                        <TextView
+                            android:id="@+id/player_number_text_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="4"
+                            android:textSize="18dp"
+                            android:textStyle="bold"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorPrimaryButtonText"
+                            android:layout_marginBottom="3dp"/>
+                        <ImageView
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:background="@drawable/player_avatar"
+                            android:layout_gravity="center"/>
+                    </LinearLayout>
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"></LinearLayout>
+                        android:id="@+id/player_details_container_right_block"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_gravity="right">
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="24dp">
+                            <TextView
+                                android:id="@+id/player_age_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/age"
+                                android:textColor="@color/colorPrimaryButtonText"
+                                android:textSize="12dp"/>
+                            <TextView
+                                android:id="@+id/player_age_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="30"
+                                android:textSize="12dp"
+                                android:textStyle="bold"
+                                android:paddingHorizontal="2dp"
+                                android:textColor="@color/colorPrimaryButtonText"/>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:id="@+id/player_height_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/height"
+                                android:textSize="12dp"
+                                android:textColor="@color/colorPrimaryButtonText"/>
+                            <TextView
+                                android:id="@+id/player_height_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="190"
+                                android:textSize="12dp"
+                                android:textStyle="bold"
+                                android:paddingHorizontal="2dp"
+                                android:textColor="@color/colorPrimaryButtonText" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/height_measure"
+                                android:textSize="12dp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorPrimaryButtonText"/>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp">
+                            <TextView
+                                android:id="@+id/player_weight_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textStyle="normal"
+                                android:text="@string/weight"
+                                android:textSize="12sp"
+                                android:textColor="@color/colorPrimaryButtonText"/>
+                            <TextView
+                                android:id="@+id/player_weight_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textStyle="bold"
+                                android:text="80"
+                                android:textSize="12sp"
+                                android:paddingHorizontal="2sp"
+                                android:textColor="@color/colorPrimaryButtonText"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/weight_measure"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorPrimaryButtonText"/>
+                        </LinearLayout>
+                        <TextView
+                            android:id="@+id/player_distance_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/distance"
+                            android:textSize="12sp"
+                            android:textColor="@color/colorPrimaryButtonText"/>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:id="@+id/player_distance_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0.0"
+                                android:paddingHorizontal="2sp"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorPrimaryButtonText"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/distance_measure"
+                                android:textSize="12sp"
+                                android:textColor="@color/colorPrimaryButtonText"/>
+                        </LinearLayout>
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -182,8 +318,9 @@
 
                 <ListView
                     android:id="@+id/players_list_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="168dp"></ListView>
+                    android:layout_width="match_parent"
+                    android:layout_height="168dp"
+                    android:choiceMode="singleChoice"/>
 
                 <LinearLayout
                     android:id="@+id/add_player_button_container"

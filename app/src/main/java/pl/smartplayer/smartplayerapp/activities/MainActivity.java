@@ -11,13 +11,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnItemClick;
+import butterknife.OnItemSelected;
 import pl.smartplayer.smartplayerapp.R;
 import pl.smartplayer.smartplayerapp.utils.Player;
+import pl.smartplayer.smartplayerapp.utils.PlayerListAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private double FIELD_CENTER_IMAGE_HEIGHT_IN_PIXELS = 167.0;
 
     private SparseArray<Player> dummyPlayers;
+    PlayerListAdapter playerListAdapter;
 
     @BindView(R.id.players_list_view)
     ListView _playersListView;
@@ -58,6 +64,21 @@ public class MainActivity extends AppCompatActivity {
     ImageButton _addPlayerButton;
     @BindView(R.id.add_player_button_container)
     LinearLayout _addPlayerButtonContainer;
+    @BindView(R.id.player_details_container_left_block)
+    LinearLayout _playerDetailsContainerLeftBlock;
+    @BindView(R.id.player_details_container_right_block)
+    LinearLayout _playerDetailsContainerRightBlock;
+    @BindView(R.id.player_name_text_view)
+    TextView _playerNameTextView;
+    @BindView(R.id.player_number_text_view)
+    TextView _playerNumberTextView;
+    @BindView(R.id.player_age_text_view)
+    TextView _playerAgeTextView;
+    @BindView(R.id.player_weight_text_view)
+    TextView _playerWeightTextView;
+    @BindView(R.id.player_height_text_view)
+    TextView _playerHeightTextView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        dummyPlayers = new SparseArray<>();
+/*        dummyPlayers = new SparseArray<>();
         dummyPlayers.append(1, new Player(1, "Wojciech", "Szczesny",
                 1, 26, 185, 73));
         dummyPlayers.append(2, new Player(2, "Robert", "Lewandowski",
@@ -83,7 +104,17 @@ public class MainActivity extends AppCompatActivity {
                 android.R.layout.simple_list_item_1,
                 list);
 
-        _playersListView.setAdapter(adapter);
+        _playersListView.setAdapter(adapter);*/
+
+        List<Player> dummyList = new ArrayList<>();
+        dummyList.add(new Player(1, "Wojciech", "Szczesny",
+                1, 26, 185, 73));
+        dummyList.add(new Player(2, "Robert", "Lewandowski",
+                9, 30, 187, 93));
+
+        playerListAdapter = new PlayerListAdapter(dummyList,
+                this.getApplicationContext());
+        _playersListView.setAdapter(playerListAdapter);
 
         DisplayMetrics dm = new DisplayMetrics();
         this.getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -116,6 +147,12 @@ public class MainActivity extends AppCompatActivity {
         _playerDetailsContainer.getLayoutParams().width = fieldViewWidth -
                 _startStopEventContainer.getLayoutParams().width;
 
+        _playerDetailsContainerLeftBlock.getLayoutParams().width = _playerDetailsContainer
+                .getLayoutParams().width/2;
+
+        _playerDetailsContainerRightBlock.getLayoutParams().width =
+                _playerDetailsContainerLeftBlock.getLayoutParams().width;
+
         //set dynamically size of field center ImageView
         double fieldCenterImageViewWidthDouble = screenWidth/5.0;
         double compressPercentOfFieldCenterImageSize =
@@ -145,5 +182,19 @@ public class MainActivity extends AppCompatActivity {
         _addPlayerButtonContainer.getLayoutParams().height = playerListContainerHeight*3/10;
 
 
+    }
+
+    @OnItemClick(R.id.players_list_view)
+    public void onPlayerSelected(int position, View view) {
+        Player player = playerListAdapter.getPlayer(position);
+
+        _playerNameTextView.setText(player.getFirstname()+" "+player.getLastname());
+        _playerNumberTextView.setText(Integer.toString(player.getNumber()));
+
+        _playerAgeTextView.setText(Integer.toString(player.getAge()));
+        _playerHeightTextView.setText(Integer.toString(player.getHeight()));
+        _playerWeightTextView.setText(Integer.toString(player.getWeight()));
+
+        view.setSelected(true);
     }
 }
