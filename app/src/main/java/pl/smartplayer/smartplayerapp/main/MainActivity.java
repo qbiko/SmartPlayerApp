@@ -1,11 +1,10 @@
-package pl.smartplayer.smartplayerapp.activities;
+package pl.smartplayer.smartplayerapp.main;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,10 +18,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnItemClick;
-import butterknife.OnItemSelected;
 import pl.smartplayer.smartplayerapp.R;
-import pl.smartplayer.smartplayerapp.utils.Player;
-import pl.smartplayer.smartplayerapp.utils.PlayerListAdapter;
 
 public class MainActivity extends AppCompatActivity {
 

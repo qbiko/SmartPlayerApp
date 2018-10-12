@@ -1,4 +1,4 @@
-package pl.smartplayer.smartplayerapp.activities;
+package pl.smartplayer.smartplayerapp.login;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -14,6 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import pl.smartplayer.smartplayerapp.R;
+import pl.smartplayer.smartplayerapp.main.MainActivity;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";

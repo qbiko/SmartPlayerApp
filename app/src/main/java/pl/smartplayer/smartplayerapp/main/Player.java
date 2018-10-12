@@ -1,4 +1,4 @@
-package pl.smartplayer.smartplayerapp.utils;
+package pl.smartplayer.smartplayerapp.main;
 
 public class Player {
     private long dbId;
