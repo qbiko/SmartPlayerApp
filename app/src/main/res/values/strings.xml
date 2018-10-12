@@ -32,5 +32,10 @@
     <string name="distance">Dystans:</string>
     <string name="distance_measure">km</string>
 
+    <!-- Strings related to choose field activities -->
+    <string name="choose_field_label">Wybierz boisko:</string>
+    <string name="create_field_description">Stwórz boisko obrazek</string>
+
+
 
 </resources>

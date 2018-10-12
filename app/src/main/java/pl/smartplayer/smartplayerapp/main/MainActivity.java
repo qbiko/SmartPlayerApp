@@ -1,5 +1,6 @@
 package pl.smartplayer.smartplayerapp.main;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -17,8 +18,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnItemClick;
 import pl.smartplayer.smartplayerapp.R;
+import pl.smartplayer.smartplayerapp.field.ChooseFieldActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -192,5 +195,11 @@ public class MainActivity extends AppCompatActivity {
         _playerWeightTextView.setText(Integer.toString(player.getWeight()));
 
         view.setSelected(true);
+    }
+
+    @OnClick(R.id.choose_field_button)
+    public void onClickChooseFieldButton() {
+        Intent intent = new Intent(getApplicationContext(), ChooseFieldActivity.class);
+        startActivity(intent);
     }
 }

@@ -1,9 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".field.ChooseFieldActivity">
+    tools:context=".field.ChooseFieldActivity"
+    android:background="@color/colorBackground"
+    android:gravity="center">
 
-</android.support.constraint.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="400dp"
+        android:background="@color/colorSecondaryBackground"
+        android:orientation="vertical"
+        android:paddingVertical="20dp">
+
+        <RelativeLayout
+            android:id="@+id/field_center_container"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:layout_alignParentTop="true">
+
+            <ImageView
+                android:id="@+id/field_center_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/field_center"
+                android:contentDescription="@string/field_center_description"></ImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/choose_field_label"
+                    android:textColor="@color/colorPrimaryButtonText"
+                    android:layout_centerInParent="true"/>
+
+        </RelativeLayout>
+
+        <ListView
+            android:id="@+id/fields_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="168dp"
+            android:choiceMode="singleChoice"/>
+
+        <ImageButton
+            android:id="@+id/create_field_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/small_add"
+            android:contentDescription="@string/create_field_description"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+</LinearLayout>
