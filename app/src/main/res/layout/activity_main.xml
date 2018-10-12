@@ -1,10 +1,342 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:background="@color/colorBackground">
+    tools:context=".main.MainActivity"
+    android:background="@color/colorBackground"
+    android:paddingVertical="20dp"
+    android:gravity="center"
+    android:id="@+id/main_container">
 
-</android.support.constraint.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:layout_marginRight="40dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:layout_marginBottom="20dp">
+
+                <ImageView
+                    android:id="@+id/field_view"
+                    android:layout_width="455dp"
+                    android:layout_height="300dp"
+                    android:contentDescription="@string/field_description"
+                    app:srcCompat="@drawable/field" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/start_stop_event_and_player_details_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:id="@+id/start_stop_event_container"
+                    android:layout_width="200dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorSecondaryBackground"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/start_stop_event_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:layout_above="@+id/start_stop_event_button"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginBottom="15dp"
+                        android:text="@string/start_event"
+                        android:textColor="@color/colorPrimaryButtonText" />
+
+                    <ImageButton
+                        android:id="@+id/start_stop_event_button"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="bottom"
+                        android:background="@drawable/start_event_bg" />
+
+                </RelativeLayout>
+
+                <View
+                    android:id="@+id/break_view"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent" />
+
+                <LinearLayout
+                    android:id="@+id/player_details_container"
+                    android:layout_width="200dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorSecondaryBackground"
+                    android:paddingVertical="5dp">
+
+                    <LinearLayout
+                        android:id="@+id/player_details_container_left_block"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_gravity="left">
+                        <TextView
+                            android:id="@+id/player_name_text_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAlignment="center"
+                            android:text="Kamil Glik"
+                            android:textSize="18dp"
+                            android:textStyle="bold"
+                            android:textColor="@color/colorPrimaryButtonText"/>
+                        <TextView
+                            android:id="@+id/player_number_text_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="4"
+                            android:textSize="18dp"
+                            android:textStyle="bold"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorPrimaryButtonText"
+                            android:layout_marginBottom="3dp"/>
+                        <ImageView
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:background="@drawable/player_avatar"
+                            android:layout_gravity="center"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/player_details_container_right_block"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_gravity="right">
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="24dp">
+                            <TextView
+                                android:id="@+id/player_age_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/age"
+                                android:textColor="@color/colorPrimaryButtonText"
+                                android:textSize="12dp"/>
+                            <TextView
+                                android:id="@+id/player_age_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="30"
+                                android:textSize="12dp"
+                                android:textStyle="bold"
+                                android:paddingHorizontal="2dp"
+                                android:textColor="@color/colorPrimaryButtonText"/>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:id="@+id/player_height_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/height"
+                                android:textSize="12dp"
+                                android:textColor="@color/colorPrimaryButtonText"/>
+                            <TextView
+                                android:id="@+id/player_height_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="190"
+                                android:textSize="12dp"
+                                android:textStyle="bold"
+                                android:paddingHorizontal="2dp"
+                                android:textColor="@color/colorPrimaryButtonText" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/height_measure"
+                                android:textSize="12dp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorPrimaryButtonText"/>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp">
+                            <TextView
+                                android:id="@+id/player_weight_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textStyle="normal"
+                                android:text="@string/weight"
+                                android:textSize="12sp"
+                                android:textColor="@color/colorPrimaryButtonText"/>
+                            <TextView
+                                android:id="@+id/player_weight_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textStyle="bold"
+                                android:text="80"
+                                android:textSize="12sp"
+                                android:paddingHorizontal="2sp"
+                                android:textColor="@color/colorPrimaryButtonText"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/weight_measure"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorPrimaryButtonText"/>
+                        </LinearLayout>
+                        <TextView
+                            android:id="@+id/player_distance_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/distance"
+                            android:textSize="12sp"
+                            android:textColor="@color/colorPrimaryButtonText"/>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:id="@+id/player_distance_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0.0"
+                                android:paddingHorizontal="2sp"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorPrimaryButtonText"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/distance_measure"
+                                android:textSize="12sp"
+                                android:textColor="@color/colorPrimaryButtonText"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/right_panel"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/choose_field_container"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:background="@color/colorSecondaryBackground"
+                android:paddingVertical="10dp">
+
+                <RelativeLayout
+                    android:id="@+id/field_center_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp"
+                    android:layout_alignParentTop="true">
+
+                    <ImageView
+                        android:id="@+id/field_center_image_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:background="@drawable/field_center"
+                        android:contentDescription="@string/field_center_description"></ImageView>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/field_text_in_choose_field_panel"
+                            android:textColor="@color/colorPrimaryButtonText" />
+
+                        <TextView
+                            android:id="@+id/field_name_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="CSA PG"
+                            android:textColor="@color/colorPrimaryButtonText" />
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <Button
+                    android:id="@+id/choose_field_button"
+                    style="?android:textAppearanceSmall"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/field_center_container"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/colorPrimaryButton"
+                    android:text="@string/choose_field"
+                    android:textColor="@color/colorPrimaryButtonText"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/space_between_choose_field_and_player_list"
+                android:layout_width="wrap_content"
+                android:layout_height="10dp"></View>
+
+            <LinearLayout
+                android:id="@+id/players_list_container"
+                android:layout_width="wrap_content"
+                android:layout_height="250dp"
+                android:background="@color/colorSecondaryBackground"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="5dp"
+                    android:text="@string/players"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryButtonText" />
+
+                <ListView
+                    android:id="@+id/players_list_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="168dp"
+                    android:choiceMode="singleChoice"/>
+
+                <LinearLayout
+                    android:id="@+id/add_player_button_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="5dp"
+                    android:gravity="center_horizontal">
+
+                    <ImageButton
+                        android:id="@+id/add_player_button"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/add_player"
+                        android:contentDescription="@string/add_player_description" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

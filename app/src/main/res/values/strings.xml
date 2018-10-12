@@ -8,10 +8,29 @@
     <string name="action_sign_in">Zaloguj</string>
     <string name="action_sign_in_short">Zarejestruj</string>
     <string name="error_invalid_email">Podany email jest nieprawidłowy</string>
-    <string name="error_invalid_password">Podane hasło jest za krótkie</string>
     <string name="error_incorrect_password">Podane hasło jest niepoprawne</string>
     <string name="error_field_required">To pole jest wymagane</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+    <string name="login_failed">Logowanie nie powiodło się</string>
+    <string name="login_loading">Logowanie...</string>
+
+    <!-- Strings related to main activity -->
+    <string name="start_event">Start rozgrywki</string>
+    <string name="stop_event">Zatrzymanie rozgrywki</string>
+    <string name="field_description">Boisko obrazek</string>
+    <string name="choose_field">Wybierz boisko</string>
+    <string name="field_text_in_choose_field_panel">boisko:</string>
+    <string name="field_center_description">Środek boiska obrazek</string>
+    <string name="players">Zawodnicy</string>
+    <string name="add_player_description">Dodaj zawodnika obrazek</string>
+
+    <!-- Strings related to player details -->
+    <string name="weight">Waga:</string>
+    <string name="height">Wzrost:</string>
+    <string name="age">Wiek:</string>
+    <string name="weight_measure">kg</string>
+    <string name="height_measure">cm</string>
+    <string name="distance">Dystans:</string>
+    <string name="distance_measure">km</string>
+
+
 </resources>

@@ -10,7 +10,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/colorBackground"
-    tools:context=".LoginActivity">
+    tools:context=".login.LoginActivity">
 
     <!-- Login progress -->
     <ProgressBar
@@ -41,13 +41,14 @@
                 <AutoCompleteTextView
                     android:id="@+id/email"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:hint="@string/prompt_email"
+                    android:textColorHint="@color/colorInputText"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:singleLine="true"
                     android:background="@color/colorInputFill"
-                    android:textColor="@color/colorInputFill"/>
+                    android:textColor="@color/colorInputText"/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -58,16 +59,15 @@
                 <EditText
                     android:id="@+id/password"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:hint="@string/prompt_password"
+                    android:textColorHint="@color/colorInputText"
                     android:imeActionId="6"
-                    android:imeActionLabel="@string/action_sign_in_short"
-                    android:imeOptions="actionUnspecified"
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:singleLine="true"
                     android:background="@color/colorInputFill"
-                    android:textColor="@color/colorInputFill"/>
+                    android:textColor="@color/colorInputText"/>
 
             </android.support.design.widget.TextInputLayout>
 
