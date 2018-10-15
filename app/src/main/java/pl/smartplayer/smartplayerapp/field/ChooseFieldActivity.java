@@ -1,5 +1,7 @@
 package pl.smartplayer.smartplayerapp.field;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,10 +12,13 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnItemClick;
 import pl.smartplayer.smartplayerapp.R;
 import pl.smartplayer.smartplayerapp.main.Player;
 import pl.smartplayer.smartplayerapp.main.PlayerListAdapter;
+
+import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CREATE_FIELD_REQUEST;
 
 public class ChooseFieldActivity extends AppCompatActivity {
 
@@ -30,8 +35,8 @@ public class ChooseFieldActivity extends AppCompatActivity {
         setContentView(R.layout.activity_choose_field);
         ButterKnife.bind(this);
 
-        fields.add(new Field(0, "CSA PG", new double[4][2]));
-        fields.add(new Field(1, "Stadion PGE Narodowy", new double[4][2]));
+        fields.add(new Field(0, "CSA PG"));
+        fields.add(new Field(1, "Stadion PGE Narodowy"));
 
         fieldListAdapter = new FieldListAdapter(fields,
                 this.getApplicationContext());
@@ -43,5 +48,19 @@ public class ChooseFieldActivity extends AppCompatActivity {
         selectedField = fieldListAdapter.getField(position);
 
         view.setSelected(true);
+    }
+
+    @OnClick(R.id.confirm_button)
+    public void onConfirmButtonClick() {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("selectedField",selectedField);
+        setResult(Activity.RESULT_OK,returnIntent);
+        finish();
+    }
+
+    @OnClick(R.id.create_field_button)
+    public void onCreateFieldButtonClick() {
+        Intent intent = new Intent(getApplicationContext(), CreateFieldActivity.class);
+        startActivityForResult(intent, CREATE_FIELD_REQUEST);
     }
 }

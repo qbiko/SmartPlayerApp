@@ -269,14 +269,16 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/field_text_in_choose_field_panel"
-                            android:textColor="@color/colorPrimaryButtonText" />
+                            android:textColor="@color/colorPrimaryButtonText"
+                            android:layout_gravity="center"/>
 
                         <TextView
                             android:id="@+id/field_name_text_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="CSA PG"
-                            android:textColor="@color/colorPrimaryButtonText" />
+                            android:text="-"
+                            android:textColor="@color/colorPrimaryButtonText"
+                            android:layout_gravity="center"/>
                     </LinearLayout>
 
                 </RelativeLayout>

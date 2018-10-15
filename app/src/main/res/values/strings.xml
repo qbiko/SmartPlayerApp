@@ -35,6 +35,14 @@
     <!-- Strings related to choose field activities -->
     <string name="choose_field_label">Wybierz boisko:</string>
     <string name="create_field_description">Stwórz boisko obrazek</string>
+    <string name="confirm">Zatwierdź</string>
+
+    <!-- Strings related to create field activities -->
+    <string name="name_field_label">Nazwa boiska:</string>
+    <string name="go_to_selected_corner">Idź do zaznaczonego narożnika boiska</string>
+    <string name="next">Dalej</string>
+    <string name="longitude">Dł.:</string>
+    <string name="latitude">Szer.:</string>
 
 
 

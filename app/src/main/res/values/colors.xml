@@ -10,4 +10,6 @@
     <color name="colorInputFill">#F2F2F2</color>
     <color name="colorInputText">#b9b9b9</color>
     <color name="colorPressed">#fc4513</color>
+    <color name="colorListItemBackground">#1a3c33</color>
+    <color name="colorSecondaryButton">#fd4f00</color>
 </resources>

@@ -22,6 +22,9 @@ import butterknife.OnClick;
 import butterknife.OnItemClick;
 import pl.smartplayer.smartplayerapp.R;
 import pl.smartplayer.smartplayerapp.field.ChooseFieldActivity;
+import pl.smartplayer.smartplayerapp.field.Field;
+
+import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CHOOSE_FIELD_REQUEST;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
     private SparseArray<Player> dummyPlayers;
     PlayerListAdapter playerListAdapter;
+
+    Field selectedField = null;
 
     @BindView(R.id.players_list_view)
     ListView _playersListView;
@@ -77,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
     TextView _playerWeightTextView;
     @BindView(R.id.player_height_text_view)
     TextView _playerHeightTextView;
+    @BindView(R.id.field_name_text_view)
+    TextView _fieldNameTextView;
 
 
     @Override
@@ -200,6 +207,18 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.choose_field_button)
     public void onClickChooseFieldButton() {
         Intent intent = new Intent(getApplicationContext(), ChooseFieldActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, CHOOSE_FIELD_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent resultIntent) {
+        if(requestCode == CHOOSE_FIELD_REQUEST) {
+            if(resultCode == RESULT_OK) {
+                selectedField = resultIntent.getExtras().getParcelable("selectedField");
+                if(selectedField != null) {
+                    _fieldNameTextView.setText(selectedField.getName());
+                }
+            }
+        }
     }
 }
