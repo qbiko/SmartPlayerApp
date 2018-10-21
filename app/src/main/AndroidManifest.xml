@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pl.smartplayer.smartplayerapp">
 
-    <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <!--to load coordinates-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission. ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -25,7 +25,8 @@
             android:name=".main.MainActivity"
             android:screenOrientation="landscape" />
         <activity android:name=".field.ChooseFieldActivity" />
-        <activity android:name=".field.CreateFieldActivity"></activity>
+        <activity android:name=".field.CreateFieldActivity"
+            android:windowSoftInputMode="stateHidden" />
     </application>
 
 </manifest>
