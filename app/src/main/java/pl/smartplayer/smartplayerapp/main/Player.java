@@ -2,33 +2,29 @@ package pl.smartplayer.smartplayerapp.main;
 
 public class Player {
     private long dbId;
-    private String firstname;
-    private String lastname;
+    private String firstName;
+    private String lastName;
     private int number;
     private int age;
     private int height;
     private int weight;
 
-    public Player(long dbId, String firstname, String lastname, int number, int age, int height, int weight) {
+    Player(long dbId, String firstName, String lastName, int number, int age, int height, int weight) {
         this.dbId = dbId;
-        this.firstname = firstname;
-        this.lastname = lastname;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.number = number;
         this.age = age;
         this.height = height;
         this.weight = weight;
     }
 
-    public long getDbId() {
-        return dbId;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
+    public String getLastName() {
+        return lastName;
     }
 
     public int getNumber() {

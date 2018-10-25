@@ -13,10 +13,10 @@ import pl.smartplayer.smartplayerapp.R;
 
 public class FieldListAdapter extends BaseAdapter {
 
-    List<Field> fields;
-    Context context;
+    private List<Field> fields;
+    private Context context;
 
-    public FieldListAdapter(List<Field> fields, Context context) {
+    FieldListAdapter(List<Field> fields, Context context) {
         this.fields = fields;
         this.context = context;
     }

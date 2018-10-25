@@ -12,25 +12,17 @@ public class Field implements Parcelable {
     private String name;
     private List<Location> coordinates;
 
-    public Field(long dbId, String name, List<Location> coordinates) {
+    Field(long dbId, String name, List<Location> coordinates) {
         this.dbId = dbId;
         this.name = name;
         this.coordinates = coordinates;
     }
 
-    public Field(Parcel parcel) {
+    private Field(Parcel parcel) {
         this.dbId = parcel.readLong();
         this.name = parcel.readString();
         this.coordinates = new ArrayList<>();
         parcel.readList(coordinates, null);
-    }
-
-    public long getDbId() {
-        return dbId;
-    }
-
-    public String getName() {
-        return name;
     }
 
     @Override
@@ -43,6 +35,10 @@ public class Field implements Parcelable {
         parcel.writeLong(dbId);
         parcel.writeString(name);
         parcel.writeList(coordinates);
+    }
+
+    public String getName() {
+        return name;
     }
 
     public static final Creator<Field> CREATOR = new Creator<Field>() {

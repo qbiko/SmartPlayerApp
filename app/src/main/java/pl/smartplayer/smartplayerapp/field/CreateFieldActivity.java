@@ -30,8 +30,15 @@ import pl.smartplayer.smartplayerapp.R;
 
 public class CreateFieldActivity extends AppCompatActivity implements LocationListener {
 
-    private double FIELD_IMAGE_WIDTH_IN_PIXELS = 768.0;
-    private double FIELD_IMAGE_HEIGHT_IN_PIXELS = 554.0;
+    private static final double FIELD_IMAGE_WIDTH_IN_PIXELS = 768.0;
+    private static final double FIELD_IMAGE_HEIGHT_IN_PIXELS = 554.0;
+
+    private Location mLastLocation;
+    private Location mCurrentLoadedLocation;
+    private LocationManager mLocationManager;
+
+    private int mCornerCounter = 0;
+    private List<Location> mCornersCoordinates = new ArrayList<>();
 
     @BindView(R.id.field_view)
     ImageView _fieldView;
@@ -44,20 +51,13 @@ public class CreateFieldActivity extends AppCompatActivity implements LocationLi
     @BindView(R.id.field_name_edit_text)
     TextView _fieldNameEditText;
 
-    private Location lastLocation;
-    private Location currentLoadedLocation;
-    private LocationManager locationManager;
-
-    private int cornerCounter = 0;
-    private List<Location> cornersCoordinates = new ArrayList<>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_field);
         ButterKnife.bind(this);
 
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -68,9 +68,9 @@ public class CreateFieldActivity extends AppCompatActivity implements LocationLi
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        //it is NETWORK_PROVIDER to test inside, change to GPS_PROVIDER in final solution
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
-        //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        //TODO: it is NETWORK_PROVIDER to test inside, change to GPS_PROVIDER in final solution
+        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+        //mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 
 
         DisplayMetrics dm = new DisplayMetrics();
@@ -92,62 +92,9 @@ public class CreateFieldActivity extends AppCompatActivity implements LocationLi
         _fieldView.getLayoutParams().height = fieldViewHeight;
     }
 
-    @OnClick(R.id.load_button)
-    public void onLoadButtonClick() {
-        int latId = getResources().getIdentifier("lat"+cornerCounter, "id", getPackageName());
-        EditText latEditText = findViewById(latId);
-        int lonId = getResources().getIdentifier("lon"+cornerCounter, "id", getPackageName());
-        EditText lonEditText = findViewById(lonId);
-
-        latEditText.setText(Double.toString(lastLocation.getLatitude()));
-        lonEditText.setText(Double.toString(lastLocation.getLongitude()));
-        currentLoadedLocation = lastLocation;
-
-        if(cornerCounter==3) {
-            _goToCornerTextView.setText(R.string.enter_field_name);
-            _nextButton.setText(R.string.confirm);
-        }
-    }
-
-    @OnClick(R.id.next_button)
-    public void onNextButtonClick() {
-        if(currentLoadedLocation!=null) {
-            if(cornerCounter==3) {
-                if(isFieldNameCorrect()) {
-                    Intent returnIntent = new Intent();
-                    String fieldName = _fieldNameEditText.getText().toString();
-                    Field createdField = new Field(123, fieldName, cornersCoordinates);
-                    returnIntent.putExtra("createdField", createdField);
-                    setResult(Activity.RESULT_OK, returnIntent);
-                    finish();
-                }
-                else {
-                    Toast.makeText(getApplicationContext(), R.string.you_must_enter_field_name, Toast
-                            .LENGTH_SHORT).show();
-                }
-            }
-
-            cornerCounter++;
-            cornersCoordinates.add(currentLoadedLocation);
-            currentLoadedLocation = null;
-
-            int backgroundId = getResources().getIdentifier("field_" + cornerCounter, "drawable",
-                    getPackageName());
-            _fieldView.setImageResource(backgroundId);
-        }
-        else {
-            Toast.makeText(getApplicationContext(), R.string.you_must_load_coordinates, Toast
-                    .LENGTH_SHORT).show();
-        }
-    }
-
-    private boolean isFieldNameCorrect() {
-        return _fieldNameEditText.getText().length() != 0;
-    }
-
     @Override
     public void onLocationChanged(Location location) {
-        lastLocation = location;
+        mLastLocation = location;
     }
 
     @Override
@@ -163,5 +110,57 @@ public class CreateFieldActivity extends AppCompatActivity implements LocationLi
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
         Log.d("Latitude","status");
+    }
+
+    @OnClick(R.id.load_button)
+    public void onLoadButtonClick() {
+        int latId = getResources().getIdentifier("lat"+ mCornerCounter, "id", getPackageName());
+        EditText latEditText = findViewById(latId);
+        int lonId = getResources().getIdentifier("lon"+ mCornerCounter, "id", getPackageName());
+        EditText lonEditText = findViewById(lonId);
+
+        latEditText.setText(Double.toString(mLastLocation.getLatitude()));
+        lonEditText.setText(Double.toString(mLastLocation.getLongitude()));
+        mCurrentLoadedLocation = mLastLocation;
+
+        if(mCornerCounter ==3) {
+            _goToCornerTextView.setText(R.string.enter_field_name);
+            _nextButton.setText(R.string.confirm);
+        }
+    }
+
+    @OnClick(R.id.next_button)
+    public void onNextButtonClick() {
+        if(mCurrentLoadedLocation !=null) {
+            if(mCornerCounter ==3) {
+                if(isFieldNameCorrect()) {
+                    Intent returnIntent = new Intent();
+                    String fieldName = _fieldNameEditText.getText().toString();
+                    // TODO: handle post request to database and get id for field
+                    Field createdField = new Field(123, fieldName, mCornersCoordinates);
+                    returnIntent.putExtra("createdField", createdField);
+                    setResult(Activity.RESULT_OK, returnIntent);
+                    finish();
+                } else {
+                    Toast.makeText(getApplicationContext(), R.string.you_must_enter_field_name, Toast
+                            .LENGTH_SHORT).show();
+                }
+            }
+
+            mCornerCounter++;
+            mCornersCoordinates.add(mCurrentLoadedLocation);
+            mCurrentLoadedLocation = null;
+
+            int backgroundId = getResources().getIdentifier("field_" + mCornerCounter, "drawable",
+                    getPackageName());
+            _fieldView.setImageResource(backgroundId);
+        } else {
+            Toast.makeText(getApplicationContext(), R.string.you_must_load_coordinates, Toast
+                    .LENGTH_SHORT).show();
+        }
+    }
+
+    private boolean isFieldNameCorrect() {
+        return _fieldNameEditText.getText().length() != 0;
     }
 }

@@ -16,17 +16,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 import pl.smartplayer.smartplayerapp.R;
-import pl.smartplayer.smartplayerapp.main.Player;
-import pl.smartplayer.smartplayerapp.main.PlayerListAdapter;
 
-import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CHOOSE_FIELD_REQUEST;
 import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CREATE_FIELD_REQUEST;
 
 public class ChooseFieldActivity extends AppCompatActivity {
 
-    private List<Field> fields = new ArrayList<>();
-    FieldListAdapter fieldListAdapter;
-    Field selectedField;
+    private List<Field> mFields = new ArrayList<>();
+    private FieldListAdapter mFieldListAdapter;
+    private Field mSelectedField;
 
     @BindView(R.id.fields_list_view)
     ListView _fieldsListView;
@@ -37,25 +34,31 @@ public class ChooseFieldActivity extends AppCompatActivity {
         setContentView(R.layout.activity_choose_field);
         ButterKnife.bind(this);
 
-        fields.add(new Field(0, "CSA PG", new ArrayList<Location>()));
-        fields.add(new Field(1, "Stadion PGE Narodowy", new ArrayList<Location>()));
+        mFields.add(new Field(0, "CSA PG", new ArrayList<Location>()));
+        mFields.add(new Field(1, "Stadion PGE Narodowy", new ArrayList<Location>()));
 
-        fieldListAdapter = new FieldListAdapter(fields,
+        mFieldListAdapter = new FieldListAdapter(mFields,
                 this.getApplicationContext());
-        _fieldsListView.setAdapter(fieldListAdapter);
+        _fieldsListView.setAdapter(mFieldListAdapter);
     }
 
-    @OnItemClick(R.id.fields_list_view)
-    public void onFieldSelected(int position, View view) {
-        selectedField = fieldListAdapter.getField(position);
-
-        view.setSelected(true);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent resultIntent) {
+        if(requestCode == CREATE_FIELD_REQUEST) {
+            if(resultCode == RESULT_OK) {
+                Field createdField = resultIntent.getExtras().getParcelable("createdField");
+                if(createdField != null) {
+                    mFields.add(createdField);
+                }
+                mFieldListAdapter.notifyDataSetChanged();
+            }
+        }
     }
 
     @OnClick(R.id.confirm_button)
     public void onConfirmButtonClick() {
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("selectedField",selectedField);
+        returnIntent.putExtra("mSelectedField", mSelectedField);
         setResult(Activity.RESULT_OK,returnIntent);
         finish();
     }
@@ -66,15 +69,10 @@ public class ChooseFieldActivity extends AppCompatActivity {
         startActivityForResult(intent, CREATE_FIELD_REQUEST);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent resultIntent) {
-        if(requestCode == CREATE_FIELD_REQUEST) {
-            if(resultCode == RESULT_OK) {
-                Field createdField = resultIntent.getExtras().getParcelable("createdField");
-                if(createdField != null)
-                    fields.add(createdField);
-                fieldListAdapter.notifyDataSetChanged();
-            }
-        }
+    @OnItemClick(R.id.fields_list_view)
+    public void onFieldSelected(int position, View view) {
+        mSelectedField = mFieldListAdapter.getField(position);
+
+        view.setSelected(true);
     }
 }
