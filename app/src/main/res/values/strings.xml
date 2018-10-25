@@ -39,11 +39,15 @@
 
     <!-- Strings related to create field activities -->
     <string name="name_field_label">Nazwa boiska:</string>
-    <string name="go_to_selected_corner">Idź do zaznaczonego narożnika boiska</string>
+    <string name="go_to_selected_corner">Idź do zaznaczonego narożnika boiska i wczytaj
+        współrzędne</string>
+    <string name="enter_field_name">Wpisz nazwę boiska</string>
     <string name="next">Dalej</string>
     <string name="longitude">Dł.:</string>
     <string name="latitude">Szer.:</string>
     <string name="load_coordinates">Wczytaj współrzędne</string>
+    <string name="you_must_load_coordinates">Najpierw wczytaj współrzędne</string>
+    <string name="you_must_enter_field_name">Musiz wpisać nazwę boiska</string>
 
 
 

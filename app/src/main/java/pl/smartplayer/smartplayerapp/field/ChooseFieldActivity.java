@@ -2,6 +2,7 @@ package pl.smartplayer.smartplayerapp.field;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +19,7 @@ import pl.smartplayer.smartplayerapp.R;
 import pl.smartplayer.smartplayerapp.main.Player;
 import pl.smartplayer.smartplayerapp.main.PlayerListAdapter;
 
+import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CHOOSE_FIELD_REQUEST;
 import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CREATE_FIELD_REQUEST;
 
 public class ChooseFieldActivity extends AppCompatActivity {
@@ -35,8 +37,8 @@ public class ChooseFieldActivity extends AppCompatActivity {
         setContentView(R.layout.activity_choose_field);
         ButterKnife.bind(this);
 
-        fields.add(new Field(0, "CSA PG"));
-        fields.add(new Field(1, "Stadion PGE Narodowy"));
+        fields.add(new Field(0, "CSA PG", new ArrayList<Location>()));
+        fields.add(new Field(1, "Stadion PGE Narodowy", new ArrayList<Location>()));
 
         fieldListAdapter = new FieldListAdapter(fields,
                 this.getApplicationContext());
@@ -62,5 +64,17 @@ public class ChooseFieldActivity extends AppCompatActivity {
     public void onCreateFieldButtonClick() {
         Intent intent = new Intent(getApplicationContext(), CreateFieldActivity.class);
         startActivityForResult(intent, CREATE_FIELD_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent resultIntent) {
+        if(requestCode == CREATE_FIELD_REQUEST) {
+            if(resultCode == RESULT_OK) {
+                Field createdField = resultIntent.getExtras().getParcelable("createdField");
+                if(createdField != null)
+                    fields.add(createdField);
+                fieldListAdapter.notifyDataSetChanged();
+            }
+        }
     }
 }

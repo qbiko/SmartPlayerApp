@@ -1,8 +1,9 @@
 package pl.smartplayer.smartplayerapp.field;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -12,9 +13,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,9 +37,19 @@ public class CreateFieldActivity extends AppCompatActivity implements LocationLi
     ImageView _fieldView;
     @BindView(R.id.main_container)
     LinearLayout _mainContainer;
+    @BindView(R.id.command_text_view)
+    TextView _goToCornerTextView;
+    @BindView(R.id.next_button)
+    Button _nextButton;
+    @BindView(R.id.field_name_edit_text)
+    TextView _fieldNameEditText;
 
     private Location lastLocation;
+    private Location currentLoadedLocation;
     private LocationManager locationManager;
+
+    private int cornerCounter = 0;
+    private List<Location> cornersCoordinates = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,11 +94,55 @@ public class CreateFieldActivity extends AppCompatActivity implements LocationLi
 
     @OnClick(R.id.load_button)
     public void onLoadButtonClick() {
-        TextView lat1 = findViewById(R.id.lat1);
-        TextView lon1 = findViewById(R.id.lon1);
+        int latId = getResources().getIdentifier("lat"+cornerCounter, "id", getPackageName());
+        EditText latEditText = findViewById(latId);
+        int lonId = getResources().getIdentifier("lon"+cornerCounter, "id", getPackageName());
+        EditText lonEditText = findViewById(lonId);
 
-        lat1.setText(Double.toString(lastLocation.getLatitude()));
-        lon1.setText(Double.toString(lastLocation.getLongitude()));
+        latEditText.setText(Double.toString(lastLocation.getLatitude()));
+        lonEditText.setText(Double.toString(lastLocation.getLongitude()));
+        currentLoadedLocation = lastLocation;
+
+        if(cornerCounter==3) {
+            _goToCornerTextView.setText(R.string.enter_field_name);
+            _nextButton.setText(R.string.confirm);
+        }
+    }
+
+    @OnClick(R.id.next_button)
+    public void onNextButtonClick() {
+        if(currentLoadedLocation!=null) {
+            if(cornerCounter==3) {
+                if(isFieldNameCorrect()) {
+                    Intent returnIntent = new Intent();
+                    String fieldName = _fieldNameEditText.getText().toString();
+                    Field createdField = new Field(123, fieldName, cornersCoordinates);
+                    returnIntent.putExtra("createdField", createdField);
+                    setResult(Activity.RESULT_OK, returnIntent);
+                    finish();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), R.string.you_must_enter_field_name, Toast
+                            .LENGTH_SHORT).show();
+                }
+            }
+
+            cornerCounter++;
+            cornersCoordinates.add(currentLoadedLocation);
+            currentLoadedLocation = null;
+
+            int backgroundId = getResources().getIdentifier("field_" + cornerCounter, "drawable",
+                    getPackageName());
+            _fieldView.setImageResource(backgroundId);
+        }
+        else {
+            Toast.makeText(getApplicationContext(), R.string.you_must_load_coordinates, Toast
+                    .LENGTH_SHORT).show();
+        }
+    }
+
+    private boolean isFieldNameCorrect() {
+        return _fieldNameEditText.getText().length() != 0;
     }
 
     @Override

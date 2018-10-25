@@ -26,7 +26,8 @@
             android:screenOrientation="landscape" />
         <activity android:name=".field.ChooseFieldActivity" />
         <activity android:name=".field.CreateFieldActivity"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>

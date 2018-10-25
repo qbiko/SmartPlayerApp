@@ -32,6 +32,7 @@
                 android:layout_marginLeft="5sp"/>
 
             <EditText
+                android:id="@+id/field_name_edit_text"
                 android:layout_width="300dp"
                 android:layout_height="30dp"
                 android:background="@color/colorInputFill"
@@ -48,7 +49,7 @@
                     android:layout_width="455dp"
                     android:layout_height="300dp"
                     android:contentDescription="@string/field_description"
-                    app:srcCompat="@drawable/field_left_down" />
+                    app:srcCompat="@drawable/field_0" />
 
                 <LinearLayout
                     android:layout_width="300dp"
@@ -58,6 +59,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/command_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/go_to_selected_corner"
@@ -107,6 +109,46 @@
                             android:layout_marginRight="5sp"/>
 
                         <EditText
+                            android:id="@+id/lat0"
+                            android:layout_width="60dp"
+                            android:layout_height="20dp"
+                            android:layout_marginRight="10sp"
+                            android:background="@color/colorInputFill"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:textColor="@color/colorInputText"
+                            android:textSize="10sp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/longitude"
+                            android:textColor="@color/colorPrimaryButtonText"
+                            android:textSize="16sp"
+                            android:layout_marginRight="5sp"/>
+
+                        <EditText
+                            android:id="@+id/lon0"
+                            android:layout_width="60dp"
+                            android:layout_height="20dp"
+                            android:layout_marginRight="10sp"
+                            android:background="@color/colorInputFill"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:textColor="@color/colorInputText"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/latitude"
+                            android:textColor="@color/colorPrimaryButtonText"
+                            android:textSize="16sp"
+                            android:layout_marginRight="5sp"/>
+
+                        <EditText
                             android:id="@+id/lat1"
                             android:layout_width="60dp"
                             android:layout_height="20dp"
@@ -114,7 +156,8 @@
                             android:background="@color/colorInputFill"
                             android:maxLines="1"
                             android:singleLine="true"
-                            android:textColor="@color/colorInputText" />
+                            android:textColor="@color/colorInputText"
+                            android:textSize="10sp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -131,45 +174,8 @@
                             android:background="@color/colorInputFill"
                             android:maxLines="1"
                             android:singleLine="true"
-                            android:textColor="@color/colorInputText" />
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/latitude"
-                            android:textColor="@color/colorPrimaryButtonText"
-                            android:textSize="16sp"
-                            android:layout_marginRight="5sp"/>
-
-                        <EditText
-                            android:id="@+id/lat2"
-                            android:layout_width="60dp"
-                            android:layout_height="20dp"
-                            android:layout_marginRight="10sp"
-                            android:background="@color/colorInputFill"
-                            android:maxLines="1"
-                            android:singleLine="true"
-                            android:textColor="@color/colorInputText" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/longitude"
-                            android:textColor="@color/colorPrimaryButtonText"
-                            android:textSize="16sp"
-                            android:layout_marginRight="5sp"/>
-
-                        <EditText
-                            android:id="@+id/lon2"
-                            android:layout_width="60dp"
-                            android:layout_height="20dp"
-                            android:layout_marginRight="10sp"
-                            android:background="@color/colorInputFill"
-                            android:maxLines="1"
-                            android:singleLine="true"
-                            android:textColor="@color/colorInputText" />
+                            android:textColor="@color/colorInputText"
+                            android:textSize="10sp" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -189,6 +195,46 @@
                             android:layout_marginRight="5sp"/>
 
                         <EditText
+                            android:id="@+id/lat2"
+                            android:layout_width="60dp"
+                            android:layout_height="20dp"
+                            android:layout_marginRight="10sp"
+                            android:background="@color/colorInputFill"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:textColor="@color/colorInputText"
+                            android:textSize="10sp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/longitude"
+                            android:textColor="@color/colorPrimaryButtonText"
+                            android:textSize="16sp"
+                            android:layout_marginRight="5sp"/>
+
+                        <EditText
+                            android:id="@+id/lon2"
+                            android:layout_width="60dp"
+                            android:layout_height="20dp"
+                            android:layout_marginRight="10sp"
+                            android:background="@color/colorInputFill"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:textColor="@color/colorInputText"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/latitude"
+                            android:textColor="@color/colorPrimaryButtonText"
+                            android:textSize="16sp"
+                            android:layout_marginRight="5sp"/>
+
+                        <EditText
                             android:id="@+id/lat3"
                             android:layout_width="60dp"
                             android:layout_height="20dp"
@@ -196,7 +242,8 @@
                             android:background="@color/colorInputFill"
                             android:maxLines="1"
                             android:singleLine="true"
-                            android:textColor="@color/colorInputText" />
+                            android:textColor="@color/colorInputText"
+                            android:textSize="10sp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -213,45 +260,8 @@
                             android:background="@color/colorInputFill"
                             android:maxLines="1"
                             android:singleLine="true"
-                            android:textColor="@color/colorInputText" />
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/latitude"
-                            android:textColor="@color/colorPrimaryButtonText"
-                            android:textSize="16sp"
-                            android:layout_marginRight="5sp"/>
-
-                        <EditText
-                            android:id="@+id/lat4"
-                            android:layout_width="60dp"
-                            android:layout_height="20dp"
-                            android:layout_marginRight="10sp"
-                            android:background="@color/colorInputFill"
-                            android:maxLines="1"
-                            android:singleLine="true"
-                            android:textColor="@color/colorInputText" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/longitude"
-                            android:textColor="@color/colorPrimaryButtonText"
-                            android:textSize="16sp"
-                            android:layout_marginRight="5sp"/>
-
-                        <EditText
-                            android:id="@+id/lon4"
-                            android:layout_width="60dp"
-                            android:layout_height="20dp"
-                            android:layout_marginRight="10sp"
-                            android:background="@color/colorInputFill"
-                            android:maxLines="1"
-                            android:singleLine="true"
-                            android:textColor="@color/colorInputText" />
+                            android:textColor="@color/colorInputText"
+                            android:textSize="10sp" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
