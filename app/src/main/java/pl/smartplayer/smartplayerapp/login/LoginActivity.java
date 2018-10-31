@@ -17,6 +17,7 @@ import pl.smartplayer.smartplayerapp.R;
 import pl.smartplayer.smartplayerapp.main.MainActivity;
 
 public class LoginActivity extends AppCompatActivity {
+
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
 
@@ -32,6 +33,12 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // disable going back to the MainActivity
+        moveTaskToBack(true);
     }
 
     @OnClick(R.id.email_sign_in_button)
@@ -68,12 +75,6 @@ public class LoginActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                     }
                 }, 3000);
-    }
-
-    @Override
-    public void onBackPressed() {
-        // disable going back to the MainActivity
-        moveTaskToBack(true);
     }
 
     public void onLoginSuccess() {

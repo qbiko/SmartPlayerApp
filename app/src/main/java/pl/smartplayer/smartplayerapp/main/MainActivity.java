@@ -1,5 +1,6 @@
 package pl.smartplayer.smartplayerapp.main;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -17,18 +18,25 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnItemClick;
 import pl.smartplayer.smartplayerapp.R;
+import pl.smartplayer.smartplayerapp.field.ChooseFieldActivity;
+import pl.smartplayer.smartplayerapp.field.Field;
+
+import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CHOOSE_FIELD_REQUEST;
 
 public class MainActivity extends AppCompatActivity {
 
-    private double FIELD_IMAGE_WIDTH_IN_PIXELS = 1061.0;
-    private double FIELD_IMAGE_HEIGHT_IN_PIXELS = 701.0;
-    private double FIELD_CENTER_IMAGE_WIDTH_IN_PIXELS = 345.0;
-    private double FIELD_CENTER_IMAGE_HEIGHT_IN_PIXELS = 167.0;
+    private static final double FIELD_IMAGE_WIDTH_IN_PIXELS = 1061.0;
+    private static final double FIELD_IMAGE_HEIGHT_IN_PIXELS = 701.0;
+    private static final double FIELD_CENTER_IMAGE_WIDTH_IN_PIXELS = 345.0;
+    private static final double FIELD_CENTER_IMAGE_HEIGHT_IN_PIXELS = 167.0;
 
-    private SparseArray<Player> dummyPlayers;
-    PlayerListAdapter playerListAdapter;
+    private SparseArray<Player> mDummyPlayers;
+    private PlayerListAdapter mPlayerListAdapter;
+
+    private Field mSelectedField = null;
 
     @BindView(R.id.players_list_view)
     ListView _playersListView;
@@ -74,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
     TextView _playerWeightTextView;
     @BindView(R.id.player_height_text_view)
     TextView _playerHeightTextView;
+    @BindView(R.id.field_name_text_view)
+    TextView _fieldNameTextView;
 
 
     @Override
@@ -82,18 +92,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-/*        dummyPlayers = new SparseArray<>();
-        dummyPlayers.append(1, new Player(1, "Wojciech", "Szczesny",
+/*        mDummyPlayers = new SparseArray<>();
+        mDummyPlayers.append(1, new Player(1, "Wojciech", "Szczesny",
                 1, 26, 185, 73));
-        dummyPlayers.append(2, new Player(2, "Robert", "Lewandowski",
+        mDummyPlayers.append(2, new Player(2, "Robert", "Lewandowski",
                 9, 30, 187, 93));
 
         final ArrayList<String> list = new ArrayList<>();
 
-        for(int i = 0; i < dummyPlayers.size(); i++) {
-            int key = dummyPlayers.keyAt(i);
-            Player player = dummyPlayers.get(key);
-            list.add(player.getNumber() + " " + player.getFirstname() + " " + player.getLastname());
+        for(int i = 0; i < mDummyPlayers.size(); i++) {
+            int key = mDummyPlayers.keyAt(i);
+            Player player = mDummyPlayers.get(key);
+            list.add(player.getNumber() + " " + player.getFirstName() + " " + player.getLastName());
         }
 
         ArrayAdapter adapter = new ArrayAdapter<>(this,
@@ -108,9 +118,9 @@ public class MainActivity extends AppCompatActivity {
         dummyList.add(new Player(2, "Robert", "Lewandowski",
                 9, 30, 187, 93));
 
-        playerListAdapter = new PlayerListAdapter(dummyList,
+        mPlayerListAdapter = new PlayerListAdapter(dummyList,
                 this.getApplicationContext());
-        _playersListView.setAdapter(playerListAdapter);
+        _playersListView.setAdapter(mPlayerListAdapter);
 
         DisplayMetrics dm = new DisplayMetrics();
         this.getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -176,15 +186,31 @@ public class MainActivity extends AppCompatActivity {
 
         //add button size and padding
         _addPlayerButtonContainer.getLayoutParams().height = playerListContainerHeight*3/10;
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent resultIntent) {
+        if(requestCode == CHOOSE_FIELD_REQUEST) {
+            if(resultCode == RESULT_OK) {
+                mSelectedField = resultIntent.getExtras().getParcelable("mSelectedField");
+                if(mSelectedField != null) {
+                    _fieldNameTextView.setText(mSelectedField.getName());
+                }
+            }
+        }
+    }
 
+    @OnClick(R.id.choose_field_button)
+    public void onClickChooseFieldButton() {
+        Intent intent = new Intent(getApplicationContext(), ChooseFieldActivity.class);
+        startActivityForResult(intent, CHOOSE_FIELD_REQUEST);
     }
 
     @OnItemClick(R.id.players_list_view)
     public void onPlayerSelected(int position, View view) {
-        Player player = playerListAdapter.getPlayer(position);
+        Player player = mPlayerListAdapter.getPlayer(position);
 
-        _playerNameTextView.setText(player.getFirstname()+" "+player.getLastname());
+        _playerNameTextView.setText(player.getFirstName()+" "+player.getLastName());
         _playerNumberTextView.setText(Integer.toString(player.getNumber()));
 
         _playerAgeTextView.setText(Integer.toString(player.getAge()));

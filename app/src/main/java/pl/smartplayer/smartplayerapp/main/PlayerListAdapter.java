@@ -13,9 +13,10 @@ import pl.smartplayer.smartplayerapp.R;
 
 public class PlayerListAdapter extends BaseAdapter {
 
-    List<Player> players;
-    Context context;
-    public PlayerListAdapter(List<Player> players, Context context) {
+    private List<Player> players;
+    private Context context;
+
+    PlayerListAdapter(List<Player> players, Context context) {
         this.players = players;
         this.context = context;
     }
@@ -41,13 +42,13 @@ public class PlayerListAdapter extends BaseAdapter {
         view = inflater.inflate(R.layout.player_list_layout, null);
 
         TextView numberTextView = view.findViewById(R.id.number_list_layout);
-        TextView playerFirstnameTextView = view.findViewById(R.id.player_firstname_list_layout);
-        TextView playerLastnameTextView = view.findViewById(R.id
+        TextView playerFirstNameTextView = view.findViewById(R.id.player_firstname_list_layout);
+        TextView playerLastNameTextView = view.findViewById(R.id
                 .player_lastname_list_layout);
 
         numberTextView.setText(Integer.toString(players.get(i).getNumber()));
-        playerFirstnameTextView.setText(players.get(i).getFirstname());
-        playerLastnameTextView.setText(players.get(i).getLastname());
+        playerFirstNameTextView.setText(players.get(i).getFirstName());
+        playerLastNameTextView.setText(players.get(i).getLastName());
 
         return view;
     }
