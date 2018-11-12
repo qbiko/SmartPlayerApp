@@ -1,6 +1,12 @@
 package pl.smartplayer.smartplayerapp.main;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -20,6 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
+import pl.smartplayer.smartplayerapp.FieldView;
 import pl.smartplayer.smartplayerapp.R;
 import pl.smartplayer.smartplayerapp.field.ChooseFieldActivity;
 import pl.smartplayer.smartplayerapp.field.Field;
@@ -42,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     ListView _playersListView;
     @BindView(R.id.field_view)
     ImageView _fieldView;
+    @BindView(R.id.drawableField)
+    ImageView _drawableField;
     @BindView(R.id.main_container)
     LinearLayout _mainContainer;
     @BindView(R.id.start_stop_event_and_player_details_container)
@@ -186,6 +195,23 @@ public class MainActivity extends AppCompatActivity {
 
         //add button size and padding
         _addPlayerButtonContainer.getLayoutParams().height = playerListContainerHeight*3/10;
+
+        repaintImageView(100,150);
+    }
+
+    private void repaintImageView(int x, int y) {
+        Bitmap myBitmap =  BitmapFactory.decodeResource(getResources(),R.drawable.field);
+        Bitmap newBitmap = myBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Paint myRectPaint = new Paint();
+//Create a new image bitmap and attach a brand new canvas to it
+        Canvas tempCanvas = new Canvas(newBitmap);
+
+        myRectPaint.setColor(Color.RED);
+
+        int size = 10;
+
+        tempCanvas.drawRect(x - size, y - size, x + size, y + size, myRectPaint);
+        _fieldView.setImageDrawable(new BitmapDrawable(getResources(), newBitmap));
     }
 
     @Override
