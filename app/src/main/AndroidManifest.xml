@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pl.smartplayer.smartplayerapp">
 
-    <!--to load coordinates-->
+    <!-- to load coordinates -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission. ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -25,9 +25,11 @@
             android:name=".main.MainActivity"
             android:screenOrientation="landscape" />
         <activity android:name=".field.ChooseFieldActivity" />
-        <activity android:name=".field.CreateFieldActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="landscape" />
+        <activity
+            android:name=".field.CreateFieldActivity"
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="stateHidden" />
+        <activity android:name=".player.PlayerListActivity"></activity>
     </application>
 
 </manifest>
