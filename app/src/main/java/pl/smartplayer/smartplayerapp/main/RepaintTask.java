@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 
 public class RepaintTask extends AsyncTask {
     MainActivity mainActivity;
-    private static final int repaintInterval = 1000;
+    private static final int REPAINT_INTERVAL = 1000;
 
     public RepaintTask(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -21,7 +21,7 @@ public class RepaintTask extends AsyncTask {
                 }
             });
             try {
-                Thread.sleep(repaintInterval);
+                Thread.sleep(REPAINT_INTERVAL);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

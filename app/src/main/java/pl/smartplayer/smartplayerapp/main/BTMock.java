@@ -22,7 +22,7 @@ public class BTMock implements Runnable {
 
             if (MainActivity.isGameActive()) {
                 Random rand = new Random();
-                for (Map.Entry<String, Point> player : MainActivity.activePlayers.entrySet()) {
+                for (Map.Entry<String, Point> player : MainActivity.sActivePlayers.entrySet()) {
                     int newX = player.getValue().x + (rand.nextInt(maxMovingRange) - maxMovingRange / 2);
                     newX = (newX < 0 ? 0 : newX);
                     newX = (newX > 1000 ? 1000 : newX);
@@ -36,6 +36,6 @@ public class BTMock implements Runnable {
     }
 
     private void updateStats(String number, int x, int y) {
-        MainActivity.activePlayers.get(number).set(x, y);
+        MainActivity.sActivePlayers.get(number).set(x, y);
     }
 }

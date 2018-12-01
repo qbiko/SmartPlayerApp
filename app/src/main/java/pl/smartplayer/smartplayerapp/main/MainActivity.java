@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     private SparseArray<Player> mDummyPlayers;
     private PlayerListAdapter mPlayerListAdapter;
-    public static Map<String, Point> activePlayers = new HashMap<>();
+    public static Map<String, Point> sActivePlayers = new HashMap<>();
 
     private Field mSelectedField = null;
 
@@ -96,10 +96,10 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.field_name_text_view)
     TextView _fieldNameTextView;
 
-    private static Boolean isGameActive = false;
+    private static Boolean sIsGameActive = false;
 
     public static Boolean isGameActive() {
-        return isGameActive;
+        return sIsGameActive;
     }
 
     @Override
@@ -204,17 +204,17 @@ public class MainActivity extends AppCompatActivity {
         _addPlayerButtonContainer.getLayoutParams().height = playerListContainerHeight * 3 / 10;
 
         //Point zawiera pozycję na boisku względem rogu. Ma wartości od 0 do 1000, automatycznie przetłumaczenie tego jest w repaint
-        activePlayers.put("1", new Point(50, 500));
-        activePlayers.put("2", new Point(250, 200));
-        activePlayers.put("3", new Point(250, 500));
-        activePlayers.put("4", new Point(250, 800));
-        activePlayers.put("5", new Point(450, 200));
-        activePlayers.put("6", new Point(450, 500));
-        activePlayers.put("7", new Point(450, 800));
-        activePlayers.put("8", new Point(650, 200));
-        activePlayers.put("9", new Point(650, 500));
-        activePlayers.put("10", new Point(650, 800));
-        activePlayers.put("11", new Point(800, 500));
+        sActivePlayers.put("1", new Point(50, 500));
+        sActivePlayers.put("2", new Point(250, 200));
+        sActivePlayers.put("3", new Point(250, 500));
+        sActivePlayers.put("4", new Point(250, 800));
+        sActivePlayers.put("5", new Point(450, 200));
+        sActivePlayers.put("6", new Point(450, 500));
+        sActivePlayers.put("7", new Point(450, 800));
+        sActivePlayers.put("8", new Point(650, 200));
+        sActivePlayers.put("9", new Point(650, 500));
+        sActivePlayers.put("10", new Point(650, 800));
+        sActivePlayers.put("11", new Point(800, 500));
 
         Thread thread = new Thread(new BTMock());
         thread.start();
@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
         //Create a new image bitmap and attach a brand new canvas to it
         Canvas tempCanvas = new Canvas(newBitmap);
 
-        if (isGameActive) {
+        if (sIsGameActive) {
 
             myRectPaint.setColor(Color.RED);
             textPaint.setTextSize(size * 2.0f);
@@ -242,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
             int maxHeight = _fieldView.getDrawable().getMinimumHeight();
             int maxWidth = _fieldView.getDrawable().getMinimumWidth();
 
-            for (Map.Entry<String, Point> player : activePlayers.entrySet()) {
+            for (Map.Entry<String, Point> player : sActivePlayers.entrySet()) {
 
                 int xPlayerPosition = (int) Math.round(player.getValue().x / 1000.0 * maxWidth);
                 int yPlayerPosition = (int) Math.round(player.getValue().y / 1000.0 * maxHeight);
@@ -294,6 +294,6 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.start_stop_event_button)
     public void toggleGameStatus() {
-        isGameActive = !isGameActive;
+        sIsGameActive = !sIsGameActive;
     }
 }
