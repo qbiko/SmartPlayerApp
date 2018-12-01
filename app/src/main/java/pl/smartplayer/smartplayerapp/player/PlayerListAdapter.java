@@ -1,4 +1,4 @@
-package pl.smartplayer.smartplayerapp.main;
+package pl.smartplayer.smartplayerapp.player;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -41,12 +41,10 @@ public class PlayerListAdapter extends BaseAdapter {
         LayoutInflater inflater = LayoutInflater.from(context);
         view = inflater.inflate(R.layout.player_list_layout, null);
 
-        TextView numberTextView = view.findViewById(R.id.number_list_layout);
         TextView playerFirstNameTextView = view.findViewById(R.id.player_firstname_list_layout);
         TextView playerLastNameTextView = view.findViewById(R.id
                 .player_lastname_list_layout);
 
-        numberTextView.setText(Integer.toString(players.get(i).getNumber()));
         playerFirstNameTextView.setText(players.get(i).getFirstName());
         playerLastNameTextView.setText(players.get(i).getLastName());
 

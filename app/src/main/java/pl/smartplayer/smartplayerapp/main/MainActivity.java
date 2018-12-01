@@ -23,8 +23,11 @@ import butterknife.OnItemClick;
 import pl.smartplayer.smartplayerapp.R;
 import pl.smartplayer.smartplayerapp.field.ChooseFieldActivity;
 import pl.smartplayer.smartplayerapp.field.Field;
+import pl.smartplayer.smartplayerapp.player.Player;
+import pl.smartplayer.smartplayerapp.player.PlayerListActivity;
 
 import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CHOOSE_FIELD_REQUEST;
+import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CHOOSE_PLAYER_REQUEST;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private static final double FIELD_CENTER_IMAGE_HEIGHT_IN_PIXELS = 167.0;
 
     private SparseArray<Player> mDummyPlayers;
-    private PlayerListAdapter mPlayerListAdapter;
+    private PlayerOnGameListAdapter mPlayerOnGameListAdapter;
 
     private Field mSelectedField = null;
 
@@ -112,15 +115,15 @@ public class MainActivity extends AppCompatActivity {
 
         _playersListView.setAdapter(adapter);*/
 
-        List<Player> dummyList = new ArrayList<>();
-        dummyList.add(new Player(1, "Wojciech", "Szczesny",
-                1, 26, 185, 73));
-        dummyList.add(new Player(2, "Robert", "Lewandowski",
-                9, 30, 187, 93));
+        List<PlayerOnGame> dummyList = new ArrayList<>();
+        dummyList.add(new PlayerOnGame(1, new Player(1, "Wojciech", "Szczesny",
+                26, 185, 73)));
+        dummyList.add(new PlayerOnGame(9, new Player(2, "Robert", "Lewandowski",
+                30, 187, 93)));
 
-        mPlayerListAdapter = new PlayerListAdapter(dummyList,
+        mPlayerOnGameListAdapter = new PlayerOnGameListAdapter(dummyList,
                 this.getApplicationContext());
-        _playersListView.setAdapter(mPlayerListAdapter);
+        _playersListView.setAdapter(mPlayerOnGameListAdapter);
 
         DisplayMetrics dm = new DisplayMetrics();
         this.getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -208,15 +211,22 @@ public class MainActivity extends AppCompatActivity {
 
     @OnItemClick(R.id.players_list_view)
     public void onPlayerSelected(int position, View view) {
-        Player player = mPlayerListAdapter.getPlayer(position);
+        PlayerOnGame playerOnGame = mPlayerOnGameListAdapter.getPlayerOnGame(position);
 
-        _playerNameTextView.setText(player.getFirstName()+" "+player.getLastName());
-        _playerNumberTextView.setText(Integer.toString(player.getNumber()));
+        _playerNameTextView.setText(playerOnGame.getPlayer().getFirstName()+" " +
+                ""+playerOnGame.getPlayer().getLastName());
+        _playerNumberTextView.setText(Integer.toString(playerOnGame.getNumber()));
 
-        _playerAgeTextView.setText(Integer.toString(player.getAge()));
-        _playerHeightTextView.setText(Integer.toString(player.getHeight()));
-        _playerWeightTextView.setText(Integer.toString(player.getWeight()));
+        _playerAgeTextView.setText(Integer.toString(playerOnGame.getPlayer().getAge()));
+        _playerHeightTextView.setText(Integer.toString(playerOnGame.getPlayer().getHeight()));
+        _playerWeightTextView.setText(Integer.toString(playerOnGame.getPlayer().getWeight()));
 
         view.setSelected(true);
+    }
+
+    @OnClick(R.id.add_player_button)
+    public void onClickAddPlayerButton() {
+        Intent intent = new Intent(getApplicationContext(), PlayerListActivity.class);
+        startActivityForResult(intent, CHOOSE_PLAYER_REQUEST);
     }
 }
