@@ -6,9 +6,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.View;
@@ -20,13 +22,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
-import pl.smartplayer.smartplayerapp.FieldView;
 import pl.smartplayer.smartplayerapp.R;
 import pl.smartplayer.smartplayerapp.field.ChooseFieldActivity;
 import pl.smartplayer.smartplayerapp.field.Field;
@@ -42,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     private SparseArray<Player> mDummyPlayers;
     private PlayerListAdapter mPlayerListAdapter;
+    public static Map<String, Point> activePlayers = new HashMap<>();
 
     private Field mSelectedField = null;
 
@@ -49,8 +53,6 @@ public class MainActivity extends AppCompatActivity {
     ListView _playersListView;
     @BindView(R.id.field_view)
     ImageView _fieldView;
-    @BindView(R.id.drawableField)
-    ImageView _drawableField;
     @BindView(R.id.main_container)
     LinearLayout _mainContainer;
     @BindView(R.id.start_stop_event_and_player_details_container)
@@ -94,6 +96,11 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.field_name_text_view)
     TextView _fieldNameTextView;
 
+    private static Boolean isGameActive = false;
+
+    public static Boolean isGameActive() {
+        return isGameActive;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,14 +144,14 @@ public class MainActivity extends AppCompatActivity {
         int screenHeight = dm.heightPixels;
 
         //set dynamically padding in main container
-        int verticalPadding = screenHeight*2/100;
+        int verticalPadding = screenHeight * 2 / 100;
         _mainContainer.setPadding(0, verticalPadding, 0, verticalPadding);
 
         //set dynamically size of field ImageView
-        double fieldViewHeightDouble = screenHeight/2;
-        double compressPercentOfFieldImageSize = fieldViewHeightDouble/FIELD_IMAGE_HEIGHT_IN_PIXELS;
-        int fieldViewHeight = (int)fieldViewHeightDouble;
-        int fieldViewWidth = (int)(FIELD_IMAGE_WIDTH_IN_PIXELS*compressPercentOfFieldImageSize);
+        double fieldViewHeightDouble = screenHeight / 2;
+        double compressPercentOfFieldImageSize = fieldViewHeightDouble / FIELD_IMAGE_HEIGHT_IN_PIXELS;
+        int fieldViewHeight = (int) fieldViewHeightDouble;
+        int fieldViewWidth = (int) (FIELD_IMAGE_WIDTH_IN_PIXELS * compressPercentOfFieldImageSize);
 
         _fieldView.getLayoutParams().width = fieldViewWidth;
         _fieldView.getLayoutParams().height = fieldViewHeight;
@@ -152,37 +159,37 @@ public class MainActivity extends AppCompatActivity {
         //set dynamically width of left and right blocks under field ImageView
         _startStopEventAndPlayerDetailsContainer.getLayoutParams().width = fieldViewWidth;
 
-        double containerMargin = fieldViewWidth*5/100;
+        double containerMargin = fieldViewWidth * 5 / 100;
 
-        _breakView.getLayoutParams().width = (int)containerMargin;
+        _breakView.getLayoutParams().width = (int) containerMargin;
 
-        _startStopEventContainer.getLayoutParams().width = (int)(fieldViewWidth*3/8 -
+        _startStopEventContainer.getLayoutParams().width = (int) (fieldViewWidth * 3 / 8 -
                 containerMargin);
 
         _playerDetailsContainer.getLayoutParams().width = fieldViewWidth -
                 _startStopEventContainer.getLayoutParams().width;
 
         _playerDetailsContainerLeftBlock.getLayoutParams().width = _playerDetailsContainer
-                .getLayoutParams().width/2;
+                .getLayoutParams().width / 2;
 
         _playerDetailsContainerRightBlock.getLayoutParams().width =
                 _playerDetailsContainerLeftBlock.getLayoutParams().width;
 
         //set dynamically size of field center ImageView
-        double fieldCenterImageViewWidthDouble = screenWidth/5.0;
+        double fieldCenterImageViewWidthDouble = screenWidth / 5.0;
         double compressPercentOfFieldCenterImageSize =
-                fieldCenterImageViewWidthDouble/FIELD_CENTER_IMAGE_WIDTH_IN_PIXELS;
-        int fieldCenterViewWidth = (int)fieldCenterImageViewWidthDouble;
+                fieldCenterImageViewWidthDouble / FIELD_CENTER_IMAGE_WIDTH_IN_PIXELS;
+        int fieldCenterViewWidth = (int) fieldCenterImageViewWidthDouble;
         int fieldCenterViewHeight = (int)
-                (FIELD_CENTER_IMAGE_HEIGHT_IN_PIXELS*compressPercentOfFieldCenterImageSize);
+                (FIELD_CENTER_IMAGE_HEIGHT_IN_PIXELS * compressPercentOfFieldCenterImageSize);
         _rightPanel.getLayoutParams().width = fieldCenterViewWidth;
         _fieldCenterContainer.getLayoutParams().height = fieldCenterViewHeight;
 
         _chooseFieldContainer.getLayoutParams().height =
-                (int)(fieldCenterViewHeight+fieldCenterViewHeight/1.2);
+                (int) (fieldCenterViewHeight + fieldCenterViewHeight / 1.2);
 
         //set dynamically size of players list container and contained in this other elements
-        int mainContainerHeight = screenHeight-2*verticalPadding;
+        int mainContainerHeight = screenHeight - 2 * verticalPadding;
 
         int playerListContainerHeight = mainContainerHeight - _chooseFieldContainer
                 .getLayoutParams().height - verticalPadding;
@@ -191,35 +198,74 @@ public class MainActivity extends AppCompatActivity {
 
         _playersListContainer.getLayoutParams().height = playerListContainerHeight;
 
-        _playersListView.getLayoutParams().height = playerListContainerHeight*5/10;
+        _playersListView.getLayoutParams().height = playerListContainerHeight * 5 / 10;
 
         //add button size and padding
-        _addPlayerButtonContainer.getLayoutParams().height = playerListContainerHeight*3/10;
+        _addPlayerButtonContainer.getLayoutParams().height = playerListContainerHeight * 3 / 10;
 
-        repaintImageView(100,150);
+        //Point zawiera pozycję na boisku względem rogu. Ma wartości od 0 do 1000, automatycznie przetłumaczenie tego jest w repaint
+        activePlayers.put("1", new Point(50, 500));
+        activePlayers.put("2", new Point(250, 200));
+        activePlayers.put("3", new Point(250, 500));
+        activePlayers.put("4", new Point(250, 800));
+        activePlayers.put("5", new Point(450, 200));
+        activePlayers.put("6", new Point(450, 500));
+        activePlayers.put("7", new Point(450, 800));
+        activePlayers.put("8", new Point(650, 200));
+        activePlayers.put("9", new Point(650, 500));
+        activePlayers.put("10", new Point(650, 800));
+        activePlayers.put("11", new Point(800, 500));
+
+        Thread thread = new Thread(new BTMock());
+        thread.start();
+
+        RepaintTask repaintTask = new RepaintTask(this);
+        repaintTask.execute();
     }
 
-    private void repaintImageView(int x, int y) {
-        Bitmap myBitmap =  BitmapFactory.decodeResource(getResources(),R.drawable.field);
+    public void repaintImageView() {
+        int size = 15;
+        Bitmap myBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.field);
         Bitmap newBitmap = myBitmap.copy(Bitmap.Config.ARGB_8888, true);
         Paint myRectPaint = new Paint();
-//Create a new image bitmap and attach a brand new canvas to it
+        Paint textPaint = new Paint();
+        //Create a new image bitmap and attach a brand new canvas to it
         Canvas tempCanvas = new Canvas(newBitmap);
 
-        myRectPaint.setColor(Color.RED);
+        if (isGameActive) {
 
-        int size = 10;
+            myRectPaint.setColor(Color.RED);
+            textPaint.setTextSize(size * 2.0f);
+            textPaint.setColor(Color.WHITE);
 
-        tempCanvas.drawRect(x - size, y - size, x + size, y + size, myRectPaint);
+
+            int maxHeight = _fieldView.getDrawable().getMinimumHeight();
+            int maxWidth = _fieldView.getDrawable().getMinimumWidth();
+
+            for (Map.Entry<String, Point> player : activePlayers.entrySet()) {
+
+                int xPlayerPosition = (int) Math.round(player.getValue().x / 1000.0 * maxWidth);
+                int yPlayerPosition = (int) Math.round(player.getValue().y / 1000.0 * maxHeight);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    tempCanvas.drawOval(xPlayerPosition - size, yPlayerPosition - size, xPlayerPosition + size, yPlayerPosition + size, myRectPaint);
+                } else {
+                    tempCanvas.drawRect(xPlayerPosition - size, yPlayerPosition - size, xPlayerPosition + size, yPlayerPosition + size, myRectPaint);
+                }
+
+                int xTextPosition = player.getKey().length() == 1 ? xPlayerPosition - size / 2 : xPlayerPosition - size; //Tak aby napis był mniejwięcej w centrum kształtu
+                tempCanvas.drawText(player.getKey(), xTextPosition, yPlayerPosition + size * 0.75f, textPaint);
+            }
+        }
         _fieldView.setImageDrawable(new BitmapDrawable(getResources(), newBitmap));
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent resultIntent) {
-        if(requestCode == CHOOSE_FIELD_REQUEST) {
-            if(resultCode == RESULT_OK) {
+        if (requestCode == CHOOSE_FIELD_REQUEST) {
+            if (resultCode == RESULT_OK) {
                 mSelectedField = resultIntent.getExtras().getParcelable("mSelectedField");
-                if(mSelectedField != null) {
+                if (mSelectedField != null) {
                     _fieldNameTextView.setText(mSelectedField.getName());
                 }
             }
@@ -236,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
     public void onPlayerSelected(int position, View view) {
         Player player = mPlayerListAdapter.getPlayer(position);
 
-        _playerNameTextView.setText(player.getFirstName()+" "+player.getLastName());
+        _playerNameTextView.setText(player.getFirstName() + " " + player.getLastName());
         _playerNumberTextView.setText(Integer.toString(player.getNumber()));
 
         _playerAgeTextView.setText(Integer.toString(player.getAge()));
@@ -244,5 +290,10 @@ public class MainActivity extends AppCompatActivity {
         _playerWeightTextView.setText(Integer.toString(player.getWeight()));
 
         view.setSelected(true);
+    }
+
+    @OnClick(R.id.start_stop_event_button)
+    public void toggleGameStatus() {
+        isGameActive = !isGameActive;
     }
 }
