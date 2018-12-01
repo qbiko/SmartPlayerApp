@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".field.ChooseFieldActivity"
+    android:background="@color/colorBackground"
+    android:gravity="center">
+
+    <LinearLayout
+        android:layout_width="500dp"
+        android:layout_height="440dp"
+        android:background="@color/colorSecondaryBackground"
+        android:orientation="vertical"
+        android:paddingVertical="20dp">
+
+        <RelativeLayout
+            android:id="@+id/players_list_label_with_bg_container"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="20dp">
+
+            <ImageView
+                android:id="@+id/players_list_bg_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/field_center"
+                android:contentDescription="@string/field_center_description"></ImageView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/players_list_label"
+                android:textColor="@color/colorPrimaryButtonText"
+                android:layout_centerInParent="true"/>
+
+        </RelativeLayout>
+
+        <ListView
+            android:id="@+id/players_list_view"
+            android:layout_width="420dp"
+            android:layout_height="168dp"
+            android:choiceMode="none"
+            android:background="@color/colorListItemBackground"
+            android:layout_gravity="center" />
+
+        <ImageButton
+            android:id="@+id/add_player_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/small_add"
+            android:contentDescription="@string/create_field_description"
+            android:layout_gravity="center"
+            android:layout_marginVertical="20dp"/>
+
+        <Button
+            android:id="@+id/confirm_button"
+            style="?android:textAppearanceSmall"
+            android:layout_width="100dp"
+            android:layout_height="25dp"
+            android:text="@string/confirm"
+            android:textStyle="bold"
+            android:background="@color/colorSecondaryButton"
+            android:textColor="@color/colorPrimaryButtonText"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+</LinearLayout>
