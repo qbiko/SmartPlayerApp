@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private PlayerOnGameListAdapter mPlayerOnGameListAdapter;
 
     private Field mSelectedField = null;
+    private PlayerOnGame mSelectedPlayer = null;
+    List<PlayerOnGame> mDummyList = new ArrayList<>();
 
     @BindView(R.id.players_list_view)
     ListView _playersListView;
@@ -115,13 +117,12 @@ public class MainActivity extends AppCompatActivity {
 
         _playersListView.setAdapter(adapter);*/
 
-        List<PlayerOnGame> dummyList = new ArrayList<>();
-        dummyList.add(new PlayerOnGame(1, new Player(1, "Wojciech", "Szczesny",
+        mDummyList.add(new PlayerOnGame(1, new Player(1, "Wojciech", "Szczesny",
                 26, 185, 73)));
-        dummyList.add(new PlayerOnGame(9, new Player(2, "Robert", "Lewandowski",
+        mDummyList.add(new PlayerOnGame(9, new Player(2, "Robert", "Lewandowski",
                 30, 187, 93)));
 
-        mPlayerOnGameListAdapter = new PlayerOnGameListAdapter(dummyList,
+        mPlayerOnGameListAdapter = new PlayerOnGameListAdapter(mDummyList,
                 this.getApplicationContext());
         _playersListView.setAdapter(mPlayerOnGameListAdapter);
 
@@ -198,6 +199,15 @@ public class MainActivity extends AppCompatActivity {
                 mSelectedField = resultIntent.getExtras().getParcelable("mSelectedField");
                 if(mSelectedField != null) {
                     _fieldNameTextView.setText(mSelectedField.getName());
+                }
+            }
+        }
+        if(requestCode == CHOOSE_PLAYER_REQUEST) {
+            if(resultCode == RESULT_OK) {
+                mSelectedPlayer = resultIntent.getExtras().getParcelable("mSelectedPlayer");
+                if(mSelectedPlayer != null) {
+                    mDummyList.add(mSelectedPlayer);
+                    mPlayerOnGameListAdapter.notifyDataSetChanged();
                 }
             }
         }

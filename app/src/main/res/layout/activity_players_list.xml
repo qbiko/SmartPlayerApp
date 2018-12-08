@@ -76,10 +76,11 @@
         <TextView
             android:id="@+id/mac_address_text_view"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="37dp"
             android:layout_gravity="center"
             android:ems="17"
-            android:inputType="number" />
+            android:inputType="number"
+            android:textAlignment="center"/>
 
         <Button
             android:id="@+id/confirm_button"
