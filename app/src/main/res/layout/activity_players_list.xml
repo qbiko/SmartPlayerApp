@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".field.ChooseFieldActivity"
+    android:background="@color/colorBackground"
+    android:gravity="center">
+
+    <LinearLayout
+        android:layout_width="500dp"
+        android:layout_height="440dp"
+        android:background="@color/colorSecondaryBackground"
+        android:orientation="vertical"
+        android:paddingVertical="20dp">
+
+        <RelativeLayout
+            android:id="@+id/players_list_label_with_bg_container"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
+                android:text="@string/players_list_label"
+                android:textColor="@color/colorPrimaryButtonText" />
+
+        </RelativeLayout>
+
+        <ListView
+            android:id="@+id/players_list_view"
+            android:layout_width="420dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:background="@color/colorListItemBackground"
+            android:choiceMode="none" />
+
+        <LinearLayout
+            android:layout_width="420dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/player_number_label"
+                android:textColor="@color/colorPrimaryButtonText"
+                android:layout_gravity="center_vertical"/>
+
+            <EditText
+                android:id="@+id/player_number_edit_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:ems="2"
+                android:inputType="number"
+                android:textColor="@color/colorInputText"/>
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/connect_with_device_button"
+            style="?android:textAppearanceSmall"
+            android:layout_width="120dp"
+            android:layout_height="45dp"
+            android:layout_gravity="center"
+            android:background="@color/colorSecondaryButton"
+            android:text="@string/connect_with_device"
+            android:textColor="@color/colorPrimaryButtonText"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/mac_address_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="37dp"
+            android:layout_gravity="center"
+            android:ems="17"
+            android:inputType="number"
+            android:textAlignment="center"/>
+
+        <Button
+            android:id="@+id/confirm_button"
+            style="?android:textAppearanceSmall"
+            android:layout_width="100dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center"
+            android:background="@color/colorPrimaryButton"
+            android:text="@string/confirm"
+            android:textColor="@color/colorPrimaryButtonText"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>
