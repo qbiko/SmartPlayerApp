@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
     private static final double FIELD_CENTER_IMAGE_HEIGHT_IN_PIXELS = 167.0;
 
     private SparseArray<Player> mDummyPlayers;
-    private PlayerListAdapter mPlayerListAdapter;
     public static Map<String, Point> sActivePlayers = new HashMap<>();
     private PlayerOnGameListAdapter mPlayerOnGameListAdapter;
 
