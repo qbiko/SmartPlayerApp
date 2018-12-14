@@ -1,7 +1,11 @@
 package pl.smartplayer.smartplayerapp.main;
 
+import android.graphics.Point;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.util.Objects;
 
 import pl.smartplayer.smartplayerapp.player.Player;
 
@@ -9,6 +13,7 @@ public class PlayerOnGame implements Parcelable {
 
     private int number;
     private Player player;
+    private Point position = new Point(500,1000);
 
     public PlayerOnGame(int number, Player player) {
         this.number = number;
@@ -26,6 +31,14 @@ public class PlayerOnGame implements Parcelable {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public void setPosition(int x, int y){
+        position.set(x,y);
+    }
+
+    public Point getPosition(){
+        return position;
     }
 
     @Override

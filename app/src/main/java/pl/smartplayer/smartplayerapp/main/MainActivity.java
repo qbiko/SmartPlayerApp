@@ -47,12 +47,11 @@ public class MainActivity extends AppCompatActivity {
     private static final double FIELD_CENTER_IMAGE_HEIGHT_IN_PIXELS = 167.0;
 
     private SparseArray<Player> mDummyPlayers;
-    public static Map<String, Point> sActivePlayers = new HashMap<>();
     private PlayerOnGameListAdapter mPlayerOnGameListAdapter;
 
     private Field mSelectedField = null;
     private PlayerOnGame mSelectedPlayer = null;
-    List<PlayerOnGame> mDummyList = new ArrayList<>();
+    public static List<PlayerOnGame> sDummyList = new ArrayList<>();
 
     @BindView(R.id.players_list_view)
     ListView _playersListView;
@@ -113,32 +112,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-/*        mDummyPlayers = new SparseArray<>();
-        mDummyPlayers.append(1, new Player(1, "Wojciech", "Szczesny",
-                1, 26, 185, 73));
-        mDummyPlayers.append(2, new Player(2, "Robert", "Lewandowski",
-                9, 30, 187, 93));
-
-        final ArrayList<String> list = new ArrayList<>();
-
-        for(int i = 0; i < mDummyPlayers.size(); i++) {
-            int key = mDummyPlayers.keyAt(i);
-            Player player = mDummyPlayers.get(key);
-            list.add(player.getNumber() + " " + player.getFirstName() + " " + player.getLastName());
-        }
-
-        ArrayAdapter adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1,
-                list);
-
-        _playersListView.setAdapter(adapter);*/
-
-        mDummyList.add(new PlayerOnGame(1, new Player(1, "Wojciech", "Szczesny",
+        sDummyList.add(new PlayerOnGame(1, new Player(1, "Wojciech", "Szczesny",
                 26, 185, 73)));
-        mDummyList.add(new PlayerOnGame(9, new Player(2, "Robert", "Lewandowski",
+        sDummyList.add(new PlayerOnGame(9, new Player(2, "Robert", "Lewandowski",
                 30, 187, 93)));
 
-        mPlayerOnGameListAdapter = new PlayerOnGameListAdapter(mDummyList,
+        mPlayerOnGameListAdapter = new PlayerOnGameListAdapter(sDummyList,
                 this.getApplicationContext());
         _playersListView.setAdapter(mPlayerOnGameListAdapter);
 
@@ -208,17 +187,8 @@ public class MainActivity extends AppCompatActivity {
         _addPlayerButtonContainer.getLayoutParams().height = playerListContainerHeight * 3 / 10;
 
         //Point zawiera pozycję na boisku względem rogu. Ma wartości od 0 do 1000, automatycznie przetłumaczenie tego jest w repaint
-        sActivePlayers.put("1", new Point(50, 500));
-        sActivePlayers.put("2", new Point(250, 200));
-        sActivePlayers.put("3", new Point(250, 500));
-        sActivePlayers.put("4", new Point(250, 800));
-        sActivePlayers.put("5", new Point(450, 200));
-        sActivePlayers.put("6", new Point(450, 500));
-        sActivePlayers.put("7", new Point(450, 800));
-        sActivePlayers.put("8", new Point(650, 200));
-        sActivePlayers.put("9", new Point(650, 500));
-        sActivePlayers.put("10", new Point(650, 800));
-        sActivePlayers.put("11", new Point(800, 500));
+        sDummyList.get(0).setPosition(50,500);
+        sDummyList.get(1).setPosition(800,500);
 
         Thread thread = new Thread(new BTMock());
         thread.start();
@@ -246,10 +216,10 @@ public class MainActivity extends AppCompatActivity {
             int maxHeight = _fieldView.getDrawable().getMinimumHeight();
             int maxWidth = _fieldView.getDrawable().getMinimumWidth();
 
-            for (Map.Entry<String, Point> player : sActivePlayers.entrySet()) {
+            for (PlayerOnGame player : sDummyList) {
 
-                int xPlayerPosition = (int) Math.round(player.getValue().x / 1000.0 * maxWidth);
-                int yPlayerPosition = (int) Math.round(player.getValue().y / 1000.0 * maxHeight);
+                int xPlayerPosition = (int) Math.round(player.getPosition().x / 1000.0 * maxWidth);
+                int yPlayerPosition = (int) Math.round(player.getPosition().y / 1000.0 * maxHeight);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     tempCanvas.drawOval(xPlayerPosition - size, yPlayerPosition - size, xPlayerPosition + size, yPlayerPosition + size, myRectPaint);
@@ -257,8 +227,9 @@ public class MainActivity extends AppCompatActivity {
                     tempCanvas.drawRect(xPlayerPosition - size, yPlayerPosition - size, xPlayerPosition + size, yPlayerPosition + size, myRectPaint);
                 }
 
-                int xTextPosition = player.getKey().length() == 1 ? xPlayerPosition - size / 2 : xPlayerPosition - size; //Tak aby napis był mniejwięcej w centrum kształtu
-                tempCanvas.drawText(player.getKey(), xTextPosition, yPlayerPosition + size * 0.75f, textPaint);
+                String number = String.valueOf(player.getNumber());
+                int xTextPosition = number.length() == 1 ? xPlayerPosition - size / 2 : xPlayerPosition - size; //Tak aby napis był mniejwięcej w centrum kształtu
+                tempCanvas.drawText(number, xTextPosition, yPlayerPosition + size * 0.75f, textPaint);
             }
         }
         _fieldView.setImageDrawable(new BitmapDrawable(getResources(), newBitmap));
@@ -278,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
             if(resultCode == RESULT_OK) {
                 mSelectedPlayer = resultIntent.getExtras().getParcelable("mSelectedPlayer");
                 if(mSelectedPlayer != null) {
-                    mDummyList.add(mSelectedPlayer);
+                    sDummyList.add(mSelectedPlayer);
                     mPlayerOnGameListAdapter.notifyDataSetChanged();
                 }
             }
