@@ -36,6 +36,7 @@
     <string name="choose_field_label">Wybierz boisko:</string>
     <string name="create_field_description">Stwórz boisko obrazek</string>
     <string name="confirm">Zatwierdź</string>
+    <string name="loading_fields">Wczytywanie boisk...</string>
 
     <!-- Strings related to create field activities -->
     <string name="name_field_label">Nazwa boiska:</string>
@@ -48,6 +49,10 @@
     <string name="load_coordinates">Wczytaj współrzędne</string>
     <string name="you_must_load_coordinates">Najpierw wczytaj współrzędne</string>
     <string name="you_must_enter_field_name">Musiz wpisać nazwę boiska</string>
+    <string name="creating_field">Tworzenie boiska...</string>
+    <string name="device_found_location">Urządzenie odnalazło swoją lokalizację</string>
+    <string name="wait_until_device_find_location">Poczekaj, aż urządzenie odnajdzie swoją
+        lokalizację</string>
 
     <!-- Strings related to add player activities -->
     <string name="players_list_label">Dodawanie zawodnika</string>
@@ -66,6 +71,13 @@
     <string name="choose_player">Wybierz zawodnika!</string>
     <string name="enter_correct_number">Wpisz poprawny numer zawodnika!</string>
     <string name="you_must_connect_with_device">Musisz być połączony z urządzeniem!</string>
+    <string name="loading_players">Wczytywanie zawodników...</string>
+
+    <!-- Strings related to mapping corners in api -->
+    <string name="corner_0">leftDown</string>
+    <string name="corner_1">rightDown</string>
+    <string name="corner_2">rightUp</string>
+    <string name="corner_3">rightDown</string>
 
 
 </resources>

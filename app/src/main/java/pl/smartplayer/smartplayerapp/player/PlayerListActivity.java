@@ -21,17 +21,21 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 import pl.smartplayer.smartplayerapp.R;
+import pl.smartplayer.smartplayerapp.api.ApiClient;
+import pl.smartplayer.smartplayerapp.api.PlayerService;
 import pl.smartplayer.smartplayerapp.main.PlayerOnGame;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+import static pl.smartplayer.smartplayerapp.main.MainActivity.sClubId;
 import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CONNECT_WITH_DEVICE_REQUEST;
-import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CREATE_FIELD_REQUEST;
 import static pl.smartplayer.smartplayerapp.utils.CodeRequests.ENABLE_BT_REQUEST;
 
 public class PlayerListActivity extends AppCompatActivity {
@@ -53,6 +57,7 @@ public class PlayerListActivity extends AppCompatActivity {
     EditText _playerNumberEditText;
 
     private ProgressDialog _scanningProgressDialog;
+    private ProgressDialog _loadingPlayersProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,14 +65,31 @@ public class PlayerListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_players_list);
         ButterKnife.bind(this);
 
-        mPlayers.add(new Player(1, "Łukasz", "Fabiański",
-                26, 185, 73));
-        mPlayers.add(new Player(2, "Krzysztof", "Piątek",
-                30, 187, 93));
-
         mPlayerListAdapter = new PlayerListAdapter(mPlayers,
                 this.getApplicationContext());
         _playersListView.setAdapter(mPlayerListAdapter);
+
+        PlayerService playerService = ApiClient.getClient().create(PlayerService.class);
+        _loadingPlayersProgressDialog = new ProgressDialog(this);
+        _loadingPlayersProgressDialog.setMessage(getString(R.string.loading_players));
+        _loadingPlayersProgressDialog.setCancelable(false);
+        _loadingPlayersProgressDialog.show();
+
+        Call<List<Player>> call = playerService.getPlayersByClubId(sClubId);
+        call.enqueue(new Callback<List<Player>>() {
+            @Override
+            public void onResponse(Call<List<Player>> call, Response<List<Player>> response) {
+                updatePlayerList(response.body());
+                _loadingPlayersProgressDialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<List<Player>> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+
+
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
@@ -157,6 +179,15 @@ public class PlayerListActivity extends AppCompatActivity {
         unregisterReceiver(mReceiver);
 
         super.onDestroy();
+    }
+
+    private void updatePlayerList(List<Player> playerList) {
+        for (Player player : playerList) {
+            if(!mPlayers.contains(player)) {
+                mPlayers.add(player);
+            }
+        }
+        mPlayerListAdapter.notifyDataSetChanged();
     }
 
     private void showToast(String message) {

@@ -3,19 +3,33 @@ package pl.smartplayer.smartplayerapp.player;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
+import org.joda.time.LocalDate;
+import org.joda.time.Years;
+
+import java.util.Date;
+
 public class Player implements Parcelable {
+
+    @SerializedName("id")
     private long dbId;
+    @SerializedName("firstName")
     private String firstName;
+    @SerializedName("lastName")
     private String lastName;
-    private int age;
+    @SerializedName("dateOfBirth")
+    private Date dateOfBirth;
+    @SerializedName("growth")
     private int height;
+    @SerializedName("weight")
     private int weight;
 
-    public Player(long dbId, String firstName, String lastName, int age, int height, int weight) {
+    public Player(long dbId, String firstName, String lastName, Date dateOfBirth, int height, int weight) {
         this.dbId = dbId;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.age = age;
+        this.dateOfBirth = dateOfBirth;
         this.height = height;
         this.weight = weight;
     }
@@ -24,7 +38,7 @@ public class Player implements Parcelable {
         this.dbId = parcel.readLong();
         this.firstName = parcel.readString();
         this.lastName = parcel.readString();
-        this.age = parcel.readInt();
+        this.dateOfBirth = (java.util.Date)parcel.readSerializable();
         this.height = parcel.readInt();
         this.weight = parcel.readInt();
     }
@@ -38,7 +52,7 @@ public class Player implements Parcelable {
     }
 
     public int getAge() {
-        return age;
+        return Years.yearsBetween(new LocalDate(dateOfBirth), new LocalDate()).getYears();
     }
 
     public int getHeight() {
@@ -59,7 +73,7 @@ public class Player implements Parcelable {
         parcel.writeLong(dbId);
         parcel.writeString(firstName);
         parcel.writeString(lastName);
-        parcel.writeInt(age);
+        parcel.writeSerializable(dateOfBirth);
         parcel.writeInt(height);
         parcel.writeInt(weight);
     }

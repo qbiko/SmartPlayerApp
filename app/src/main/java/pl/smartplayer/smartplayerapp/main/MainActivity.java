@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.util.SparseArray;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -46,13 +45,14 @@ public class MainActivity extends AppCompatActivity {
     private static final double FIELD_CENTER_IMAGE_WIDTH_IN_PIXELS = 345.0;
     private static final double FIELD_CENTER_IMAGE_HEIGHT_IN_PIXELS = 167.0;
 
-    private SparseArray<Player> mDummyPlayers;
     public static Map<String, Point> sActivePlayers = new HashMap<>();
     private PlayerOnGameListAdapter mPlayerOnGameListAdapter;
 
     private Field mSelectedField = null;
     private PlayerOnGame mSelectedPlayer = null;
-    List<PlayerOnGame> mDummyList = new ArrayList<>();
+    List<PlayerOnGame> mPlayersOnGameList = new ArrayList<>();
+    public static final int sClubId = 4;
+    public static final int sTeamId = 6;
 
     @BindView(R.id.players_list_view)
     ListView _playersListView;
@@ -113,32 +113,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-/*        mDummyPlayers = new SparseArray<>();
-        mDummyPlayers.append(1, new Player(1, "Wojciech", "Szczesny",
-                1, 26, 185, 73));
-        mDummyPlayers.append(2, new Player(2, "Robert", "Lewandowski",
-                9, 30, 187, 93));
-
-        final ArrayList<String> list = new ArrayList<>();
-
-        for(int i = 0; i < mDummyPlayers.size(); i++) {
-            int key = mDummyPlayers.keyAt(i);
-            Player player = mDummyPlayers.get(key);
-            list.add(player.getNumber() + " " + player.getFirstName() + " " + player.getLastName());
-        }
-
-        ArrayAdapter adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1,
-                list);
-
-        _playersListView.setAdapter(adapter);*/
-
-        mDummyList.add(new PlayerOnGame(1, new Player(1, "Wojciech", "Szczesny",
-                26, 185, 73)));
-        mDummyList.add(new PlayerOnGame(9, new Player(2, "Robert", "Lewandowski",
-                30, 187, 93)));
-
-        mPlayerOnGameListAdapter = new PlayerOnGameListAdapter(mDummyList,
+        mPlayerOnGameListAdapter = new PlayerOnGameListAdapter(mPlayersOnGameList,
                 this.getApplicationContext());
         _playersListView.setAdapter(mPlayerOnGameListAdapter);
 
@@ -278,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
             if(resultCode == RESULT_OK) {
                 mSelectedPlayer = resultIntent.getExtras().getParcelable("mSelectedPlayer");
                 if(mSelectedPlayer != null) {
-                    mDummyList.add(mSelectedPlayer);
+                    mPlayersOnGameList.add(mSelectedPlayer);
                     mPlayerOnGameListAdapter.notifyDataSetChanged();
                 }
             }
