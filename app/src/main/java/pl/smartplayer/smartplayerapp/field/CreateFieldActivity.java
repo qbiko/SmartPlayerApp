@@ -159,6 +159,15 @@ public class CreateFieldActivity extends AppCompatActivity implements LocationLi
     @OnClick(R.id.next_button)
     public void onNextButtonClick() {
         if(mCurrentLoadedLocation !=null) {
+            Map<String, Double> location = new HashMap<>();
+            location.put("lat", mCurrentLoadedLocation
+                    .getLatitude());
+            location.put("lng", mCurrentLoadedLocation
+                    .getLongitude());
+            mCornersCoordinates.put(getString(getResources().getIdentifier("corner_" +
+                            mCornerCounter, "string",
+                    getPackageName())), location);
+
             if(mCornerCounter == 3) {
                 if(isFieldNameCorrect()) {
                     _creatingFieldProgressDialog.show();
@@ -189,15 +198,6 @@ public class CreateFieldActivity extends AppCompatActivity implements LocationLi
                             .LENGTH_SHORT).show();
                 }
             }
-
-            Map<String, Double> location = new HashMap<>();
-            location.put("lat", mCurrentLoadedLocation
-                    .getLatitude());
-            location.put("lng", mCurrentLoadedLocation
-                    .getLongitude());
-            mCornersCoordinates.put(getString(getResources().getIdentifier("corner_" +
-                            mCornerCounter, "string",
-                    getPackageName())), location);
 
             mCornerCounter++;
             mCurrentLoadedLocation = null;

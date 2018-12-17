@@ -75,7 +75,7 @@
 
     <!-- Strings related to mapping corners in api -->
     <string name="corner_0">leftDown</string>
-    <string name="corner_1">rightDown</string>
+    <string name="corner_1">leftUp</string>
     <string name="corner_2">rightUp</string>
     <string name="corner_3">rightDown</string>
 
