@@ -1,23 +1,24 @@
 package pl.smartplayer.smartplayerapp.utils;
 
-import android.graphics.Point;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-class PositionsRequest {
-    private Point point;
+public class PositionsRequest {
+    private Point2D point;
     private int number;
-    private long timestamp;
+    private Date timestamp;
 
-    public PositionsRequest(Point point, int number, long timestamp) {
+    public PositionsRequest(Point2D point, int number, Date timestamp) {
         this.point = point;
         this.number = number;
         this.timestamp = timestamp;
     }
 
-    public Point getPoint() {
+    public Point2D getPoint() {
         return point;
     }
 
-    public void setPoint(Point point) {
+    public void setPoint(Point2D point) {
         this.point = point;
     }
 
@@ -29,11 +30,7 @@ class PositionsRequest {
         this.number = number;
     }
 
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
+    public String getTimestamp() {
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(timestamp);
     }
 }

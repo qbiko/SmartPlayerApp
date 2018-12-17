@@ -35,6 +35,7 @@ import pl.smartplayer.smartplayerapp.field.ChooseFieldActivity;
 import pl.smartplayer.smartplayerapp.field.Field;
 import pl.smartplayer.smartplayerapp.player.Player;
 import pl.smartplayer.smartplayerapp.player.PlayerListActivity;
+import pl.smartplayer.smartplayerapp.utils.PositionsCollector;
 
 import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CHOOSE_FIELD_REQUEST;
 import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CHOOSE_PLAYER_REQUEST;
@@ -195,6 +196,9 @@ public class MainActivity extends AppCompatActivity {
 
         RepaintTask repaintTask = new RepaintTask(this);
         repaintTask.execute();
+
+        //Thread positionsCollector = new Thread(new PositionsCollector());
+       // positionsCollector.run();
     }
 
     public void repaintImageView() {

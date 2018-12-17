@@ -2,6 +2,8 @@ package pl.smartplayer.smartplayerapp.connection;
 
 import com.google.gson.JsonArray;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 import pl.smartplayer.smartplayerapp.main.MainActivity;
@@ -40,4 +42,5 @@ public class ConnectionClient extends AbstractClient {
         }
 
     }
+
 }
