@@ -6,12 +6,12 @@ import java.util.Date;
 public class PositionsRequest {
     private Point2D point;
     private int number;
-    private Date timestamp;
+    private Date date;
 
-    public PositionsRequest(Point2D point, int number, Date timestamp) {
+    public PositionsRequest(Point2D point, int number, Date date) {
         this.point = point;
         this.number = number;
-        this.timestamp = timestamp;
+        this.date = date;
     }
 
     public Point2D getPoint() {
@@ -30,7 +30,7 @@ public class PositionsRequest {
         this.number = number;
     }
 
-    public String getTimestamp() {
-        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(timestamp);
+    public String getDateString() {
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(date);
     }
 }

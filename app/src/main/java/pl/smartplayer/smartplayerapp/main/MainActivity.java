@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
         sDummyList.get(0).setPosition(50,500);
         sDummyList.get(1).setPosition(800,500);
 
-        Thread thread = new Thread(new BTMock());
+        Thread thread = new Thread(new BTMock(getApplicationContext()));
         thread.start();
 
         RepaintTask repaintTask = new RepaintTask(this);

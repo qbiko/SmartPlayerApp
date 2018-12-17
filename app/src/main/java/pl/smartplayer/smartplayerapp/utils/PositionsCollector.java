@@ -32,7 +32,7 @@ public class PositionsCollector {
                 FileWriter fileWriter = new FileWriter(filePath);
 
                 mainObject.put("teamId",1); //TODO
-                mainObject.put("gameId",12); // TODO
+                mainObject.put("gameId",1); // TODO
                 JSONArray playersArray = new JSONArray();
                 mainObject.put("players",playersArray);
                 fileWriter.write(mainObject.toJSONString());
@@ -62,7 +62,7 @@ public class PositionsCollector {
 
             if(searched != null){
                 JSONObject positionsObject = new JSONObject();
-                positionsObject.put("timestamp",positionsRequest.getTimestamp());
+                positionsObject.put("date",positionsRequest.getDateString());
                 positionsObject.put("longitude",positionsRequest.getPoint().x);
                 positionsObject.put("latitude",positionsRequest.getPoint().y);
 
@@ -75,7 +75,7 @@ public class PositionsCollector {
 
             } else {
                 JSONObject positionsObject = new JSONObject();
-                positionsObject.put("timestamp",positionsRequest.getTimestamp());
+                positionsObject.put("date",positionsRequest.getDateString());
                 positionsObject.put("longitude",positionsRequest.getPoint().x);
                 positionsObject.put("latitude",positionsRequest.getPoint().y);
                 JSONArray jsonArray = new JSONArray();
