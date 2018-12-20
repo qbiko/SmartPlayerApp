@@ -1,13 +1,13 @@
 package pl.smartplayer.smartplayerapp.field;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +16,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
+import okhttp3.internal.Util;
 import pl.smartplayer.smartplayerapp.R;
 import pl.smartplayer.smartplayerapp.api.ApiClient;
 import pl.smartplayer.smartplayerapp.api.FieldService;
+import pl.smartplayer.smartplayerapp.utils.UtilMethods;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -54,18 +56,7 @@ public class ChooseFieldActivity extends AppCompatActivity {
         _loadingFieldsProgressDialog.show();
 
         Call<List<Field>> call = fieldService.getFieldsByClubId(sClubId);
-        call.enqueue(new Callback<List<Field>>() {
-            @Override
-            public void onResponse(Call<List<Field>> call, Response<List<Field>> response) {
-                updateFieldList(response.body());
-                _loadingFieldsProgressDialog.dismiss();
-            }
-
-            @Override
-            public void onFailure(Call<List<Field>> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
+        call.enqueue(callback);
     }
 
     @Override
@@ -102,12 +93,25 @@ public class ChooseFieldActivity extends AppCompatActivity {
         view.setSelected(true);
     }
 
-    private void updateFieldList(List<Field> fieldList) {
-        for (Field field : fieldList) {
-            if(!mFields.contains(field)) {
-                mFields.add(field);
+    private Callback<List<Field>> callback = new Callback<List<Field>>() {
+        @Override
+        public void onResponse(Call<List<Field>> call, Response<List<Field>> response) {
+            if(response.isSuccessful()) {
+                UtilMethods.updateUIList(response.body(), mFields, mFieldListAdapter);
+                _loadingFieldsProgressDialog.dismiss();
+            }
+            else {
+                Dialog dialog = UtilMethods.createInvalidConnectWithApiDialog(ChooseFieldActivity.this,
+                        call, callback, _loadingFieldsProgressDialog);
+                dialog.show();
             }
         }
-        mFieldListAdapter.notifyDataSetChanged();
-    }
+
+        @Override
+        public void onFailure(Call<List<Field>> call, Throwable t) {
+            Dialog dialog = UtilMethods.createInvalidConnectWithApiDialog(ChooseFieldActivity.this,
+                    call, callback, _loadingFieldsProgressDialog);
+            dialog.show();
+        }
+    };
 }

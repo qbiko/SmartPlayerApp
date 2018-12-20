@@ -2,6 +2,7 @@ package pl.smartplayer.smartplayerapp.field;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -31,6 +31,7 @@ import butterknife.OnClick;
 import pl.smartplayer.smartplayerapp.R;
 import pl.smartplayer.smartplayerapp.api.ApiClient;
 import pl.smartplayer.smartplayerapp.api.FieldService;
+import pl.smartplayer.smartplayerapp.utils.UtilMethods;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -175,23 +176,7 @@ public class CreateFieldActivity extends AppCompatActivity implements LocationLi
                     Field field = new Field(fieldName, "", true,
                             mCornersCoordinates, sClubId);
                     Call<Field> call = fieldService.createField(field);
-                    call.enqueue(new Callback<Field>() {
-                        @Override
-                        public void onResponse(Call<Field> call, Response<Field> response) {
-                            Field createdField = response.body();
-                            _creatingFieldProgressDialog.dismiss();
-
-                            Intent returnIntent = new Intent();
-                            returnIntent.putExtra("createdField", createdField);
-                            setResult(Activity.RESULT_OK, returnIntent);
-                            finish();
-                        }
-
-                        @Override
-                        public void onFailure(Call<Field> call, Throwable t) {
-                            t.printStackTrace();
-                        }
-                    });
+                    call.enqueue(callback);
 
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.you_must_enter_field_name, Toast
@@ -210,6 +195,33 @@ public class CreateFieldActivity extends AppCompatActivity implements LocationLi
                     .LENGTH_SHORT).show();
         }
     }
+
+    private Callback<Field> callback = new Callback<Field>() {
+        @Override
+        public void onResponse(Call<Field> call, Response<Field> response) {
+            if(response.isSuccessful()){
+                Field createdField = response.body();
+                _creatingFieldProgressDialog.dismiss();
+
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("createdField", createdField);
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
+            }
+            else {
+                Dialog dialog = UtilMethods.createInvalidConnectWithApiDialog(CreateFieldActivity.this,
+                        call, callback, _creatingFieldProgressDialog);
+                dialog.show();
+            }
+        }
+
+        @Override
+        public void onFailure(final Call<Field> call, Throwable t) {
+            Dialog dialog = UtilMethods.createInvalidConnectWithApiDialog(CreateFieldActivity.this,
+                    call, callback, _creatingFieldProgressDialog);
+            dialog.show();
+        }
+    };
 
     private boolean isFieldNameCorrect() {
         return _fieldNameEditText.getText().length() != 0;

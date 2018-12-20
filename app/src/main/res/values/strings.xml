@@ -79,5 +79,9 @@
     <string name="corner_2">rightUp</string>
     <string name="corner_3">rightDown</string>
 
-
+    <!-- Strings related to invalid connect with api dialog -->
+    <string name="invalid_connect_with_api_information">Nie udało połączyć się z serwerem.
+        Ponowić próbę połączenia? (sprawdź połączenie z internetem)</string>
+    <string name="yes">Tak</string>
+    <string name="no">Nie</string>
 </resources>
