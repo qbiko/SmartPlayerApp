@@ -5,10 +5,10 @@ import java.util.Date;
 
 public class PositionsRequest {
     private Point2D point;
-    private int number;
+    private long number;
     private Date date;
 
-    public PositionsRequest(Point2D point, int number, Date date) {
+    public PositionsRequest(Point2D point, long number, Date date) {
         this.point = point;
         this.number = number;
         this.date = date;
@@ -22,11 +22,11 @@ public class PositionsRequest {
         this.point = point;
     }
 
-    public int getNumber() {
+    public long getNumber() {
         return number;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(long number) {
         this.number = number;
     }
 

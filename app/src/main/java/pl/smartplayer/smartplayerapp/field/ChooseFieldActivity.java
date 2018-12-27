@@ -45,6 +45,7 @@ public class ChooseFieldActivity extends AppCompatActivity {
         setContentView(R.layout.activity_choose_field);
         ButterKnife.bind(this);
 
+        getSupportActionBar().hide();
         mFieldListAdapter = new FieldListAdapter(mFields,
                 this.getApplicationContext());
         _fieldsListView.setAdapter(mFieldListAdapter);

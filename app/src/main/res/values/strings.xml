@@ -22,6 +22,8 @@
     <string name="field_center_description">Środek boiska obrazek</string>
     <string name="players">Zawodnicy</string>
     <string name="add_player_description">Dodaj zawodnika obrazek</string>
+    <string name="select_field_before_game_start">Przed wystartowaniem rozgrywki wybierz boisko!</string>
+    <string name="add_player_before_game_start">Przed wystartowaniem rozgrywki dodaj choć jednego zawodnika!</string>
 
     <!-- Strings related to player details -->
     <string name="weight">Waga:</string>
@@ -84,4 +86,5 @@
         Ponowić próbę połączenia? (sprawdź połączenie z internetem)</string>
     <string name="yes">Tak</string>
     <string name="no">Nie</string>
+    <string name="send_result_failed">Nie udało się przesłać wyników na serwer.</string>
 </resources>

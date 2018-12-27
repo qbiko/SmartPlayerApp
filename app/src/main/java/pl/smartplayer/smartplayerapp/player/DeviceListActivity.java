@@ -34,6 +34,7 @@ public class DeviceListActivity extends Activity {
         setContentView(R.layout.activity_device_list);
         ButterKnife.bind(this);
 
+        getActionBar().hide();
         mDeviceList = getIntent().getExtras().getParcelableArrayList("devices");
 
         mAdapter = new DeviceListAdapter(this);
