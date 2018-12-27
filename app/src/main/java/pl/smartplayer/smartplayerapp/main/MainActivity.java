@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.util.SparseArray;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -47,11 +46,15 @@ public class MainActivity extends AppCompatActivity {
     private static final double FIELD_CENTER_IMAGE_WIDTH_IN_PIXELS = 345.0;
     private static final double FIELD_CENTER_IMAGE_HEIGHT_IN_PIXELS = 167.0;
 
+    public static Map<String, Point> sActivePlayers = new HashMap<>();
     private SparseArray<Player> mDummyPlayers;
     private PlayerOnGameListAdapter mPlayerOnGameListAdapter;
 
     private Field mSelectedField = null;
     private PlayerOnGame mSelectedPlayer = null;
+    List<PlayerOnGame> mPlayersOnGameList = new ArrayList<>();
+    public static final int sClubId = 4;
+    public static final int sTeamId = 6;
     public static List<PlayerOnGame> sDummyList = new ArrayList<>();
 
     @BindView(R.id.players_list_view)
@@ -113,12 +116,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        sDummyList.add(new PlayerOnGame(1, new Player(1, "Wojciech", "Szczesny",
-                26, 185, 73)));
-        sDummyList.add(new PlayerOnGame(9, new Player(2, "Robert", "Lewandowski",
-                30, 187, 93)));
-
-        mPlayerOnGameListAdapter = new PlayerOnGameListAdapter(sDummyList,
+        mPlayerOnGameListAdapter = new PlayerOnGameListAdapter(mPlayersOnGameList,
                 this.getApplicationContext());
         _playersListView.setAdapter(mPlayerOnGameListAdapter);
 
@@ -253,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
             if(resultCode == RESULT_OK) {
                 mSelectedPlayer = resultIntent.getExtras().getParcelable("mSelectedPlayer");
                 if(mSelectedPlayer != null) {
-                    sDummyList.add(mSelectedPlayer);
+                    mPlayersOnGameList.add(mSelectedPlayer);
                     mPlayerOnGameListAdapter.notifyDataSetChanged();
                 }
             }
