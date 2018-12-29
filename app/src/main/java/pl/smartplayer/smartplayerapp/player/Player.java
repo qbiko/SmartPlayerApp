@@ -63,6 +63,10 @@ public class Player implements Parcelable {
         return weight;
     }
 
+    public long getDbId() {
+        return dbId;
+    }
+
     @Override
     public int describeContents() {
         return 0;

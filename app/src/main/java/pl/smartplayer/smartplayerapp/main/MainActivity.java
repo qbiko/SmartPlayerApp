@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +33,6 @@ import butterknife.OnItemClick;
 import pl.smartplayer.smartplayerapp.R;
 import pl.smartplayer.smartplayerapp.field.ChooseFieldActivity;
 import pl.smartplayer.smartplayerapp.field.Field;
-import pl.smartplayer.smartplayerapp.player.Player;
 import pl.smartplayer.smartplayerapp.player.PlayerListActivity;
 
 import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CHOOSE_FIELD_REQUEST;
@@ -50,9 +50,9 @@ public class MainActivity extends AppCompatActivity {
 
     private Field mSelectedField = null;
     private PlayerOnGame mSelectedPlayer = null;
-    List<PlayerOnGame> mPlayersOnGameList = new ArrayList<>();
-    public static final int sClubId = 4;
-    public static final int sTeamId = 6;
+    public static List<PlayerOnGame> mPlayersOnGameList = new ArrayList<>();
+    public static final int sClubId = 1;
+    public static final int sTeamId = 1;
 
     @BindView(R.id.players_list_view)
     ListView _playersListView;
@@ -113,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        getSupportActionBar().hide();
         mPlayerOnGameListAdapter = new PlayerOnGameListAdapter(mPlayersOnGameList,
                 this.getApplicationContext());
         _playersListView.setAdapter(mPlayerOnGameListAdapter);
@@ -181,25 +182,6 @@ public class MainActivity extends AppCompatActivity {
 
         //add button size and padding
         _addPlayerButtonContainer.getLayoutParams().height = playerListContainerHeight * 3 / 10;
-
-        //Point zawiera pozycję na boisku względem rogu. Ma wartości od 0 do 1000, automatycznie przetłumaczenie tego jest w repaint
-        sActivePlayers.put("1", new Point(50, 500));
-        sActivePlayers.put("2", new Point(250, 200));
-        sActivePlayers.put("3", new Point(250, 500));
-        sActivePlayers.put("4", new Point(250, 800));
-        sActivePlayers.put("5", new Point(450, 200));
-        sActivePlayers.put("6", new Point(450, 500));
-        sActivePlayers.put("7", new Point(450, 800));
-        sActivePlayers.put("8", new Point(650, 200));
-        sActivePlayers.put("9", new Point(650, 500));
-        sActivePlayers.put("10", new Point(650, 800));
-        sActivePlayers.put("11", new Point(800, 500));
-
-        Thread thread = new Thread(new BTMock());
-        thread.start();
-
-        RepaintTask repaintTask = new RepaintTask(this);
-        repaintTask.execute();
     }
 
     public void repaintImageView() {
@@ -221,10 +203,10 @@ public class MainActivity extends AppCompatActivity {
             int maxHeight = _fieldView.getDrawable().getMinimumHeight();
             int maxWidth = _fieldView.getDrawable().getMinimumWidth();
 
-            for (Map.Entry<String, Point> player : sActivePlayers.entrySet()) {
+            for (PlayerOnGame player : mPlayersOnGameList) {
 
-                int xPlayerPosition = (int) Math.round(player.getValue().x / 1000.0 * maxWidth);
-                int yPlayerPosition = (int) Math.round(player.getValue().y / 1000.0 * maxHeight);
+                int xPlayerPosition = (int) Math.round(player.getPosition().x / 1000.0 * maxWidth);
+                int yPlayerPosition = (int) Math.round(player.getPosition().y / 1000.0 * maxHeight);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     tempCanvas.drawOval(xPlayerPosition - size, yPlayerPosition - size, xPlayerPosition + size, yPlayerPosition + size, myRectPaint);
@@ -232,8 +214,9 @@ public class MainActivity extends AppCompatActivity {
                     tempCanvas.drawRect(xPlayerPosition - size, yPlayerPosition - size, xPlayerPosition + size, yPlayerPosition + size, myRectPaint);
                 }
 
-                int xTextPosition = player.getKey().length() == 1 ? xPlayerPosition - size / 2 : xPlayerPosition - size; //Tak aby napis był mniejwięcej w centrum kształtu
-                tempCanvas.drawText(player.getKey(), xTextPosition, yPlayerPosition + size * 0.75f, textPaint);
+                String number = String.valueOf(player.getNumber());
+                int xTextPosition = number.length() == 1 ? xPlayerPosition - size / 2 : xPlayerPosition - size; //Tak aby napis był mniejwięcej w centrum kształtu
+                tempCanvas.drawText(number, xTextPosition, yPlayerPosition + size * 0.75f, textPaint);
             }
         }
         _fieldView.setImageDrawable(new BitmapDrawable(getResources(), newBitmap));
@@ -282,8 +265,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.start_stop_event_button)
-    public void toggleGameStatus() {
-        sIsGameActive = !sIsGameActive;
+    public void startGame() {
+        if(mSelectedField == null) {
+            Toast.makeText(getApplicationContext(), R.string.select_field_before_game_start,Toast.LENGTH_LONG).show();
+            return;
+        }
+        if(mPlayersOnGameList.isEmpty()){
+            Toast.makeText(getApplicationContext(), R.string.add_player_before_game_start, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        sIsGameActive = true;
+
+        // TODO: Jak Seba zrobi endpointa to trzeba tu wywołać createGame i przekazać jakoś gameID dalej (Może do tego BTMock, z tego dalej do PositionsProcessora)
+
+        Thread thread = new Thread(new BTMock(this));
+        thread.start();
+
+        RepaintTask repaintTask = new RepaintTask(this);
+        repaintTask.execute();
     }
 
     @OnClick(R.id.add_player_button)

@@ -68,6 +68,7 @@ public class PlayerListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_players_list);
         ButterKnife.bind(this);
 
+        getSupportActionBar().hide();
         mPlayerListAdapter = new PlayerListAdapter(mPlayers,
                 this.getApplicationContext());
         _playersListView.setAdapter(mPlayerListAdapter);
