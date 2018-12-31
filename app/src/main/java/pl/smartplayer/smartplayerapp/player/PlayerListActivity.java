@@ -6,13 +6,20 @@ import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.os.Build;
+import android.os.Handler;
+import android.os.IBinder;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -21,7 +28,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,6 +39,7 @@ import butterknife.OnItemClick;
 import pl.smartplayer.smartplayerapp.R;
 import pl.smartplayer.smartplayerapp.api.ApiClient;
 import pl.smartplayer.smartplayerapp.api.PlayerService;
+import pl.smartplayer.smartplayerapp.main.MldpBluetoothService;
 import pl.smartplayer.smartplayerapp.main.PlayerOnGame;
 import pl.smartplayer.smartplayerapp.utils.UtilMethods;
 import retrofit2.Call;
@@ -41,6 +51,7 @@ import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CONNECT_WITH_DEVI
 import static pl.smartplayer.smartplayerapp.utils.CodeRequests.ENABLE_BT_REQUEST;
 import static pl.smartplayer.smartplayerapp.utils.UtilMethods.updateUIList;
 
+@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class PlayerListActivity extends AppCompatActivity {
 
     private List<Player> mPlayers = new ArrayList<>();
@@ -61,6 +72,10 @@ public class PlayerListActivity extends AppCompatActivity {
 
     private ProgressDialog _scanningProgressDialog;
     private ProgressDialog _loadingPlayersProgressDialog;
+    private MldpBluetoothService bleService;
+    private Handler scanStopHandler;
+    private boolean areScanning;
+    private static final long SCAN_TIME = 10000;						                            //Length of time in milliseconds to scan for BLE devices
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,15 +108,6 @@ public class PlayerListActivity extends AppCompatActivity {
             }
         }
 
-        IntentFilter filter = new IntentFilter();
-
-        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-        filter.addAction(BluetoothDevice.ACTION_FOUND);
-        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
-        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-
-        registerReceiver(mReceiver, filter);
-
         _scanningProgressDialog = new ProgressDialog(this);
 
         _scanningProgressDialog.setMessage(getString(R.string.scanning));
@@ -115,6 +121,39 @@ public class PlayerListActivity extends AppCompatActivity {
                 mBluetoothAdapter.cancelDiscovery();
             }
         });
+
+        Intent bleServiceIntent = new Intent(this, MldpBluetoothService.class);	                    //Create Intent to bind to the MldpBluetoothService
+        this.bindService(bleServiceIntent, bleServiceConnection, BIND_AUTO_CREATE);	                //Bind to the  service and use bleServiceConnection callbacks for service connect and disconnect
+        scanStopHandler = new Handler();                                                            //Create a handler for a delayed runnable that will stop the scan after a time
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MldpBluetoothService.ACTION_BLE_SCAN_RESULT);
+        registerReceiver (bleServiceReceiver, intentFilter);                                        //Register the receiver to receive the scan results broadcast by the service
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(bleService != null) {
+            scanStopHandler.removeCallbacks(stopScan);                                              //Stop the scan timeout handler from calling the runnable to stop the scan
+            scanStop();
+        }
+        unregisterReceiver(bleServiceReceiver);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbindService(bleServiceConnection);                                                    //Unbind from the service
     }
 
     @OnClick(R.id.confirm_button)
@@ -131,7 +170,11 @@ public class PlayerListActivity extends AppCompatActivity {
 
     @OnClick(R.id.connect_with_device_button)
     public void onConnectWithDeviceButtonClick() {
-        mBluetoothAdapter.startDiscovery();
+
+        Toast.makeText(this,"Connectiong", Toast.LENGTH_LONG);
+        if(bleService != null) {                                                                    //Service will not have started when activity first starts but this ensures a scan if resuming from pause
+            scanStart();
+        }
     }
 
     @Override
@@ -165,13 +208,6 @@ public class PlayerListActivity extends AppCompatActivity {
         view.setSelected(true);
     }
 
-    @Override
-    public void onDestroy() {
-        unregisterReceiver(mReceiver);
-
-        super.onDestroy();
-    }
-
     private void showToast(String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
@@ -193,27 +229,18 @@ public class PlayerListActivity extends AppCompatActivity {
         return true;
     }
 
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+    // ----------------------------------------------------------------------------------------------------------------
+    // BroadcastReceiver handles the scan result event fired by the MldpBluetoothService service
+    private final BroadcastReceiver bleServiceReceiver = new BroadcastReceiver() {
+        @Override
         public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
+            final String action = intent.getAction();
+            if (MldpBluetoothService.ACTION_BLE_SCAN_RESULT.equals(action)) {
+                Log.i("Test","Action scan result");
+                final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
-            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                mDeviceList = new ArrayList<>();
-                _scanningProgressDialog.show();
-            }
-            else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                _scanningProgressDialog.dismiss();
-
-                Intent newIntent = new Intent(PlayerListActivity.this, DeviceListActivity.class);
-                newIntent.putParcelableArrayListExtra("devices", mDeviceList);
-
-                startActivityForResult(newIntent, CONNECT_WITH_DEVICE_REQUEST);
-            }
-            else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 mDeviceList.add(device);
-
-                showToast(getString(R.string.found_device) + " " + device.getName());
             }
         }
     };
@@ -239,4 +266,98 @@ public class PlayerListActivity extends AppCompatActivity {
             dialog.show();
         }
     };
+
+    // ----------------------------------------------------------------------------------------------------------------
+    // Callback for MldpBluetoothService service connection and disconnection
+    private final ServiceConnection bleServiceConnection = new ServiceConnection() {		        //Create new ServiceConnection interface to handle service connection and disconnection
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {		        //Service MldpBluetoothService has connected
+            MldpBluetoothService.LocalBinder binder = (MldpBluetoothService.LocalBinder) service;
+            bleService = binder.getService();                                                       //Get a reference to the service
+            //scanStart();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) { 			                //Service disconnects - should never happen while activity is running
+            bleService = null;								                                        //Service has no connection
+        }
+    };
+
+    private class BleDevice {
+        private String address;                                                                     //Instance variables for address and name of a BLE device
+        private String name;
+
+        //Constructor for a new BleDevice object
+        public BleDevice(String a, String n) {
+            address = a;
+            name = n;
+        }
+
+        public String getAddress() {
+            return address;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public boolean equals(Object object) {                                                      //equals function required to execute if(!bleDevices.contains(device)) above
+            if (object != null && object instanceof BleDevice) {                                    //Check that the object is valis
+                if (this.address.equals(((BleDevice) object).address)) {                            //Check that address strings are the same
+                    return true;                                                                    //Then the BleDevice objects are the same
+                }
+            }
+            return false;                                                                           //Not teh same so return false
+        }
+
+        @Override
+        public int hashCode() {                                                                     //hashCode required for cleanup if equals is implemented
+            return this.address.hashCode();
+        }
+
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+    // Runnable used by the scanStopHandler to stop the scan
+    private Runnable stopScan = new Runnable() {
+        @Override
+        public void run() {
+            scanStop();
+            Log.i("Test","Action scan end");
+            Intent newIntent = new Intent(PlayerListActivity.this, DeviceListActivity.class);
+            Set<BluetoothDevice> set = new HashSet<>(mDeviceList);
+            mDeviceList.clear();
+            mDeviceList.addAll(set);
+            newIntent.putParcelableArrayListExtra("devices", mDeviceList);
+
+            startActivityForResult(newIntent, CONNECT_WITH_DEVICE_REQUEST);
+        }
+    };
+
+    // ----------------------------------------------------------------------------------------------------------------
+    // Stops a scan
+    private void scanStop() {
+        if (areScanning) {															                //See if still scanning
+            bleService.scanStop();                                         							//Stop the scan in progress
+            areScanning = false;						                							//Indicate that we are not scanning
+            setProgressBarIndeterminateVisibility(false);                                           //Show circular progress bar
+            invalidateOptionsMenu();                                                                //The options menu needs to be refreshed
+        }
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+    // Starts a scan
+    private void scanStart() {
+        if (areScanning == false) {                                                                 //See if already scanning - possible if resuming after turning on Bluetooth
+            if (bleService.isBluetoothRadioEnabled()) {                                             //See if the Bluetooth radio is on - may have been turned off
+                areScanning = true;                                                                 //Indicate that we are scanning - used for menu context and to avoid starting scan twice
+                bleService.scanStart();                                                             //Start scanning
+                scanStopHandler.postDelayed(stopScan, SCAN_TIME);                                   //Create delayed runnable that will stop the scan when it runs after SCAN_TIME milliseconds
+            } else {                                                                                //Radio needs to be enabled
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);         //Create an intent asking the user to grant permission to enable Bluetooth
+                startActivityForResult(enableBtIntent,ENABLE_BT_REQUEST );                         //Fire the intent to start the activity that will return a result based on user input
+             }
+        }
+    }
 }

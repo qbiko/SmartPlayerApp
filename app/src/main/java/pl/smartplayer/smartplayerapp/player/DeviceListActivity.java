@@ -5,6 +5,9 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.content.ComponentName;
+import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.content.BroadcastReceiver;
@@ -12,12 +15,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import android.os.IBinder;
+import android.support.annotation.RequiresApi;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import pl.smartplayer.smartplayerapp.R;
+import pl.smartplayer.smartplayerapp.main.MldpBluetoothService;
 
 public class DeviceListActivity extends Activity {
 
@@ -27,6 +33,7 @@ public class DeviceListActivity extends Activity {
     private DeviceListAdapter mAdapter;
     private ArrayList<BluetoothDevice> mDeviceList;
     private String mCurrentAddressMac;
+    private MldpBluetoothService bleService;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,7 +41,6 @@ public class DeviceListActivity extends Activity {
         setContentView(R.layout.activity_device_list);
         ButterKnife.bind(this);
 
-        getActionBar().hide();
         mDeviceList = getIntent().getExtras().getParcelableArrayList("devices");
 
         mAdapter = new DeviceListAdapter(this);
@@ -58,12 +64,17 @@ public class DeviceListActivity extends Activity {
         _devicesListView.setAdapter(mAdapter);
 
         registerReceiver(mPairReceiver, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
+
+        Intent bleServiceIntent = new Intent(this, MldpBluetoothService.class);	                    //Create Intent to bind to the MldpBluetoothService
+        this.bindService(bleServiceIntent, bleServiceConnection, BIND_AUTO_CREATE);	                //Bind to the  service and use bleServiceConnection callbacks for service connect and disconnect
+
     }
 
     @Override
     public void onDestroy() {
         unregisterReceiver(mPairReceiver);
 
+        unbindService(bleServiceConnection);
         super.onDestroy();
     }
 
@@ -71,11 +82,17 @@ public class DeviceListActivity extends Activity {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void pairDevice(BluetoothDevice device) {
         try {
-            mCurrentAddressMac = device.getAddress();
-            Method method = device.getClass().getMethod("createBond", (Class[]) null);
-            method.invoke(device, (Object[]) null);
+            //mCurrentAddressMac = device.getAddress();
+            bleService.connect(device.getAddress());
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("addressMac", device.getAddress());
+            DeviceListActivity.this.setResult(Activity.RESULT_OK, returnIntent);
+            finish();
+            //Method method = device.getClass().getMethod("createBond", (Class[]) null);
+           // method.invoke(device, (Object[]) null);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -118,4 +135,22 @@ public class DeviceListActivity extends Activity {
             }
         }
     };
+
+
+    // ----------------------------------------------------------------------------------------------------------------
+    // Callback for MldpBluetoothService service connection and disconnection
+    private final ServiceConnection bleServiceConnection = new ServiceConnection() {		        //Create new ServiceConnection interface to handle service connection and disconnection
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {		        //Service MldpBluetoothService has connected
+            MldpBluetoothService.LocalBinder binder = (MldpBluetoothService.LocalBinder) service;
+            bleService = binder.getService();                                                       //Get a reference to the service
+            //scanStart();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) { 			                //Service disconnects - should never happen while activity is running
+            bleService = null;								                                        //Service has no connection
+        }
+    };
+
 }

@@ -22,8 +22,6 @@ public class BTMock implements Runnable {
     //TO jest tymczasowe, działające tylko dla boiska o określonym położeniu. Ogarnę jak będę robił dla rzeczywistego BT
     private static final double upperLeftCornerLat = 54.370012;
     private static final double upperLeftCornerLon = 18.629355;
-    private static final double lowerRightCornerLat = 54.369448;
-    private static final double lowerRightCornerLon = 18.630966;
 
 
     private MainActivity mainActivity;

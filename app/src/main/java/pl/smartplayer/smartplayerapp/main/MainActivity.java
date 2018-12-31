@@ -1,6 +1,12 @@
 package pl.smartplayer.smartplayerapp.main;
 
+import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -10,8 +16,11 @@ import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -37,6 +46,7 @@ import pl.smartplayer.smartplayerapp.player.PlayerListActivity;
 
 import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CHOOSE_FIELD_REQUEST;
 import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CHOOSE_PLAYER_REQUEST;
+import static pl.smartplayer.smartplayerapp.utils.UtilMethods.bleServiceReceiver;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Field mSelectedField = null;
     private PlayerOnGame mSelectedPlayer = null;
+    private MldpBluetoothService bleService;
     public static List<PlayerOnGame> mPlayersOnGameList = new ArrayList<>();
     public static final int sClubId = 1;
     public static final int sTeamId = 1;
@@ -107,12 +118,13 @@ public class MainActivity extends AppCompatActivity {
         return sIsGameActive;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
+        registerReceiver(bleServiceReceiver, new IntentFilter(){{addAction(MldpBluetoothService.ACTION_BLE_DATA_RECEIVED);}});
         getSupportActionBar().hide();
         mPlayerOnGameListAdapter = new PlayerOnGameListAdapter(mPlayersOnGameList,
                 this.getApplicationContext());
@@ -182,6 +194,15 @@ public class MainActivity extends AppCompatActivity {
 
         //add button size and padding
         _addPlayerButtonContainer.getLayoutParams().height = playerListContainerHeight * 3 / 10;
+        Intent bleServiceIntent = new Intent(this, MldpBluetoothService.class);	                    //Create Intent to bind to the MldpBluetoothService
+        this.bindService(bleServiceIntent, bleServiceConnection, BIND_AUTO_CREATE);	                //Bind to the  service and use bleServiceConnection callbacks for service connect and disconnect
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbindService(bleServiceConnection);
     }
 
     public void repaintImageView() {
@@ -290,4 +311,21 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), PlayerListActivity.class);
         startActivityForResult(intent, CHOOSE_PLAYER_REQUEST);
     }
+
+    // ----------------------------------------------------------------------------------------------------------------
+    // Callback for MldpBluetoothService service connection and disconnection
+    private final ServiceConnection bleServiceConnection = new ServiceConnection() {		        //Create new ServiceConnection interface to handle service connection and disconnection
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {		        //Service MldpBluetoothService has connected
+            MldpBluetoothService.LocalBinder binder = (MldpBluetoothService.LocalBinder) service;
+            bleService = binder.getService();                                                       //Get a reference to the service
+            //scanStart();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) { 			                //Service disconnects - should never happen while activity is running
+            bleService = null;								                                        //Service has no connection
+        }
+    };
+
 }
