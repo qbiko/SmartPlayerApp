@@ -14,11 +14,19 @@ public class PlayerOnGame implements Parcelable {
     private int number;
     private Player player;
     private Point position = new Point(500,1000);
+    private String moduleMac = "";
 
     public PlayerOnGame(int number, Player player) {
         this.number = number;
         this.player = player;
     }
+
+
+    public PlayerOnGame(int number, Player player, String mac) {
+        this(number,player);
+        moduleMac = mac;
+    }
+
 
     private PlayerOnGame(Parcel parcel) {
         this.number = parcel.readInt();

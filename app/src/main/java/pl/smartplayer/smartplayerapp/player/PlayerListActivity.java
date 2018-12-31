@@ -160,8 +160,9 @@ public class PlayerListActivity extends AppCompatActivity {
     public void onConfirmButtonClick() {
         if(validateForm()){
             Intent returnIntent = new Intent();
+            String mac = _macAddressTextView.getText().toString();
             int number = Integer.parseInt(_playerNumberEditText.getText().toString());
-            PlayerOnGame playerOnGameToReturn = new PlayerOnGame(number, mSelectedPlayer);
+            PlayerOnGame playerOnGameToReturn = new PlayerOnGame(number, mSelectedPlayer,mac);
             returnIntent.putExtra("mSelectedPlayer", playerOnGameToReturn);
             setResult(Activity.RESULT_OK,returnIntent);
             finish();
@@ -171,7 +172,7 @@ public class PlayerListActivity extends AppCompatActivity {
     @OnClick(R.id.connect_with_device_button)
     public void onConnectWithDeviceButtonClick() {
 
-        Toast.makeText(this,"Connectiong", Toast.LENGTH_LONG);
+        Toast.makeText(this,R.string.connecting, Toast.LENGTH_LONG).show();
         if(bleService != null) {                                                                    //Service will not have started when activity first starts but this ensures a scan if resuming from pause
             scanStart();
         }
@@ -237,8 +238,8 @@ public class PlayerListActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (MldpBluetoothService.ACTION_BLE_SCAN_RESULT.equals(action)) {
-                Log.i("Test","Action scan result");
                 final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                Toast.makeText(context,R.string.found_device,Toast.LENGTH_SHORT).show();
 
                 mDeviceList.add(device);
             }
@@ -282,41 +283,6 @@ public class PlayerListActivity extends AppCompatActivity {
             bleService = null;								                                        //Service has no connection
         }
     };
-
-    private class BleDevice {
-        private String address;                                                                     //Instance variables for address and name of a BLE device
-        private String name;
-
-        //Constructor for a new BleDevice object
-        public BleDevice(String a, String n) {
-            address = a;
-            name = n;
-        }
-
-        public String getAddress() {
-            return address;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public boolean equals(Object object) {                                                      //equals function required to execute if(!bleDevices.contains(device)) above
-            if (object != null && object instanceof BleDevice) {                                    //Check that the object is valis
-                if (this.address.equals(((BleDevice) object).address)) {                            //Check that address strings are the same
-                    return true;                                                                    //Then the BleDevice objects are the same
-                }
-            }
-            return false;                                                                           //Not teh same so return false
-        }
-
-        @Override
-        public int hashCode() {                                                                     //hashCode required for cleanup if equals is implemented
-            return this.address.hashCode();
-        }
-
-    }
 
     // ----------------------------------------------------------------------------------------------------------------
     // Runnable used by the scanStopHandler to stop the scan

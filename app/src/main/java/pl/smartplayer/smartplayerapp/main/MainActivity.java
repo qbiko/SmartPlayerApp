@@ -124,7 +124,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        registerReceiver(bleServiceReceiver, new IntentFilter(){{addAction(MldpBluetoothService.ACTION_BLE_DATA_RECEIVED);}});
+        registerReceiver(bleServiceReceiver, new IntentFilter() {{
+            addAction(MldpBluetoothService.ACTION_BLE_DATA_RECEIVED);
+        }});
         getSupportActionBar().hide();
         mPlayerOnGameListAdapter = new PlayerOnGameListAdapter(mPlayersOnGameList,
                 this.getApplicationContext());
@@ -194,8 +196,8 @@ public class MainActivity extends AppCompatActivity {
 
         //add button size and padding
         _addPlayerButtonContainer.getLayoutParams().height = playerListContainerHeight * 3 / 10;
-        Intent bleServiceIntent = new Intent(this, MldpBluetoothService.class);	                    //Create Intent to bind to the MldpBluetoothService
-        this.bindService(bleServiceIntent, bleServiceConnection, BIND_AUTO_CREATE);	                //Bind to the  service and use bleServiceConnection callbacks for service connect and disconnect
+        Intent bleServiceIntent = new Intent(this, MldpBluetoothService.class);                        //Create Intent to bind to the MldpBluetoothService
+        this.bindService(bleServiceIntent, bleServiceConnection, BIND_AUTO_CREATE);                    //Bind to the  service and use bleServiceConnection callbacks for service connect and disconnect
 
     }
 
@@ -253,10 +255,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-        if(requestCode == CHOOSE_PLAYER_REQUEST) {
-            if(resultCode == RESULT_OK) {
+        if (requestCode == CHOOSE_PLAYER_REQUEST) {
+            if (resultCode == RESULT_OK) {
                 mSelectedPlayer = resultIntent.getExtras().getParcelable("mSelectedPlayer");
-                if(mSelectedPlayer != null) {
+                if (mSelectedPlayer != null) {
                     mPlayersOnGameList.add(mSelectedPlayer);
                     mPlayerOnGameListAdapter.notifyDataSetChanged();
                 }
@@ -274,8 +276,8 @@ public class MainActivity extends AppCompatActivity {
     public void onPlayerSelected(int position, View view) {
         PlayerOnGame playerOnGame = mPlayerOnGameListAdapter.getPlayerOnGame(position);
 
-        _playerNameTextView.setText(playerOnGame.getPlayer().getFirstName()+" " +
-                ""+playerOnGame.getPlayer().getLastName());
+        _playerNameTextView.setText(playerOnGame.getPlayer().getFirstName() + " " +
+                "" + playerOnGame.getPlayer().getLastName());
         _playerNumberTextView.setText(Integer.toString(playerOnGame.getNumber()));
 
         _playerAgeTextView.setText(Integer.toString(playerOnGame.getPlayer().getAge()));
@@ -287,23 +289,25 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.start_stop_event_button)
     public void startGame() {
-        if(mSelectedField == null) {
-            Toast.makeText(getApplicationContext(), R.string.select_field_before_game_start,Toast.LENGTH_LONG).show();
-            return;
+        if (!sIsGameActive) {
+            if (mSelectedField == null) {
+                Toast.makeText(getApplicationContext(), R.string.select_field_before_game_start, Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (mPlayersOnGameList.isEmpty()) {
+                Toast.makeText(getApplicationContext(), R.string.add_player_before_game_start, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            sIsGameActive = true;
+
+            // TODO: Jak Seba zrobi endpointa to trzeba tu wywołać createGame i przekazać jakoś gameID dalej (Może do tego BTMock, z tego dalej do PositionsProcessora)
+
+            Thread thread = new Thread(new BTMock(this));
+            thread.start();
+
+            RepaintTask repaintTask = new RepaintTask(this);
+            repaintTask.execute();
         }
-        if(mPlayersOnGameList.isEmpty()){
-            Toast.makeText(getApplicationContext(), R.string.add_player_before_game_start, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        sIsGameActive = true;
-
-        // TODO: Jak Seba zrobi endpointa to trzeba tu wywołać createGame i przekazać jakoś gameID dalej (Może do tego BTMock, z tego dalej do PositionsProcessora)
-
-        Thread thread = new Thread(new BTMock(this));
-        thread.start();
-
-        RepaintTask repaintTask = new RepaintTask(this);
-        repaintTask.execute();
     }
 
     @OnClick(R.id.add_player_button)
@@ -314,17 +318,17 @@ public class MainActivity extends AppCompatActivity {
 
     // ----------------------------------------------------------------------------------------------------------------
     // Callback for MldpBluetoothService service connection and disconnection
-    private final ServiceConnection bleServiceConnection = new ServiceConnection() {		        //Create new ServiceConnection interface to handle service connection and disconnection
+    private final ServiceConnection bleServiceConnection = new ServiceConnection() {                //Create new ServiceConnection interface to handle service connection and disconnection
         @Override
-        public void onServiceConnected(ComponentName componentName, IBinder service) {		        //Service MldpBluetoothService has connected
+        public void onServiceConnected(ComponentName componentName, IBinder service) {                //Service MldpBluetoothService has connected
             MldpBluetoothService.LocalBinder binder = (MldpBluetoothService.LocalBinder) service;
             bleService = binder.getService();                                                       //Get a reference to the service
             //scanStart();
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName componentName) { 			                //Service disconnects - should never happen while activity is running
-            bleService = null;								                                        //Service has no connection
+        public void onServiceDisconnected(ComponentName componentName) {                            //Service disconnects - should never happen while activity is running
+            bleService = null;                                                                        //Service has no connection
         }
     };
 
