@@ -1,9 +1,6 @@
 package pl.smartplayer.smartplayerapp.main;
 
-import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -20,7 +17,6 @@ import android.os.IBinder;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -58,9 +54,9 @@ public class MainActivity extends AppCompatActivity {
     public static Map<String, Point> sActivePlayers = new HashMap<>();
     private PlayerOnGameListAdapter mPlayerOnGameListAdapter;
 
-    private Field mSelectedField = null;
     private PlayerOnGame mSelectedPlayer = null;
     private MldpBluetoothService bleService;
+    public static Field sSelectedField = null;
     public static List<PlayerOnGame> mPlayersOnGameList = new ArrayList<>();
     public static final int sClubId = 1;
     public static final int sTeamId = 1;
@@ -249,9 +245,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent resultIntent) {
         if (requestCode == CHOOSE_FIELD_REQUEST) {
             if (resultCode == RESULT_OK) {
-                mSelectedField = resultIntent.getExtras().getParcelable("mSelectedField");
-                if (mSelectedField != null) {
-                    _fieldNameTextView.setText(mSelectedField.getName());
+                sSelectedField = resultIntent.getExtras().getParcelable("sSelectedField");
+                if (sSelectedField != null) {
+                    _fieldNameTextView.setText(sSelectedField.getName());
                 }
             }
         }
@@ -290,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.start_stop_event_button)
     public void startGame() {
         if (!sIsGameActive) {
-            if (mSelectedField == null) {
+            if (sSelectedField == null) {
                 Toast.makeText(getApplicationContext(), R.string.select_field_before_game_start, Toast.LENGTH_LONG).show();
                 return;
             }
@@ -301,9 +297,6 @@ public class MainActivity extends AppCompatActivity {
             sIsGameActive = true;
 
             // TODO: Jak Seba zrobi endpointa to trzeba tu wywołać createGame i przekazać jakoś gameID dalej (Może do tego BTMock, z tego dalej do PositionsProcessora)
-
-            Thread thread = new Thread(new BTMock(this));
-            thread.start();
 
             RepaintTask repaintTask = new RepaintTask(this);
             repaintTask.execute();
@@ -323,7 +316,6 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName componentName, IBinder service) {                //Service MldpBluetoothService has connected
             MldpBluetoothService.LocalBinder binder = (MldpBluetoothService.LocalBinder) service;
             bleService = binder.getService();                                                       //Get a reference to the service
-            //scanStart();
         }
 
         @Override

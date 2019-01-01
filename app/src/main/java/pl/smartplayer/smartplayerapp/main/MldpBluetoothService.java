@@ -292,7 +292,7 @@ public class MldpBluetoothService extends Service {
                     Log.d(TAG, "New notification or indication");
                     final Intent intent = new Intent(ACTION_BLE_DATA_RECEIVED);                         //Create the intent to announce the new data
                     intent.putExtra(INTENT_EXTRA_SERVICE_DATA, dataValue);             //Add the data to the intent
-                    intent.putExtra(INTENT_EXTRA_SERVICE_ADDRESS, characteristic.getUuid().toString());
+                    intent.putExtra(INTENT_EXTRA_SERVICE_ADDRESS, gatt.getDevice().getAddress());
                     sendBroadcast(intent);                                                              //Broadcast the intent
                 }
             }

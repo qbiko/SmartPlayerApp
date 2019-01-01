@@ -49,6 +49,10 @@ public class PlayerOnGame implements Parcelable {
         return position;
     }
 
+    public String getModuleMac() {
+        return moduleMac;
+    }
+
     @Override
     public int describeContents() {
         return 0;

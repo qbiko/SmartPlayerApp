@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
@@ -20,7 +21,9 @@ import java.util.Date;
 import java.util.List;
 
 import pl.smartplayer.smartplayerapp.R;
+import pl.smartplayer.smartplayerapp.main.MainActivity;
 import pl.smartplayer.smartplayerapp.main.MldpBluetoothService;
+import pl.smartplayer.smartplayerapp.main.PlayerOnGame;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -71,7 +74,7 @@ public class UtilMethods {
             final String action = intent.getAction();
             if (MldpBluetoothService.ACTION_BLE_DATA_RECEIVED.equals(action)) {
                 String data = intent.getStringExtra(MldpBluetoothService.INTENT_EXTRA_SERVICE_DATA);
-                String uuid = intent.getStringExtra(MldpBluetoothService.INTENT_EXTRA_SERVICE_ADDRESS);
+                String serviceAdress = intent.getStringExtra(MldpBluetoothService.INTENT_EXTRA_SERVICE_ADDRESS);
 
                 if (data != null) {
                     message = message.concat(data);
@@ -89,15 +92,31 @@ public class UtilMethods {
                                 SimpleDateFormat sdf = new SimpleDateFormat("HHmmss.SS");
                                 Date dateToSend = sdf.parse(processingMessagePart[1]);
 
-                                Double lat = Double.parseDouble(processingMessagePart[2]);
-                                Double lon = Double.parseDouble(processingMessagePart[4]);
-
+                                Double nmeaLat = Double.parseDouble(processingMessagePart[2]);
+                                Double nmeaLon = Double.parseDouble(processingMessagePart[4]);
+                                Double correctLat = nmeaLat%100 / 60 + Math.floor(nmeaLat/100);
+                                Double correctLon = nmeaLon%100 / 60 + Math.floor(nmeaLon/100);
                                 if (processingMessagePart[3].equals("S")) {
-                                    lat = -lat;
+                                    correctLat = -correctLat;
                                 }
 
-                                if (processingMessagePart[5].equals("S")) {
-                                    lon = -lon;
+                                if (processingMessagePart[5].equals("W")) {
+                                    correctLon = -correctLon;
+                                }
+
+                                for(PlayerOnGame player : MainActivity.mPlayersOnGameList){
+                                    if(player.getModuleMac().equals(serviceAdress)){
+
+                                        Point2D playerPosition = new Point2D(correctLon, correctLat);
+                                        Point2D leftDown = getPoint("leftDown");
+                                        Point2D leftUp = getPoint("leftUp");
+                                        Point2D rightUp = getPoint("rightUp");
+
+                                        player.setPosition(getPixelPositionByPoints(leftUp,leftDown,playerPosition),
+                                                getPixelPositionByPoints(leftUp,rightUp,playerPosition));
+
+                                        PositionsProcessor.addResultToJson(new PositionsRequest(playerPosition, player.getPlayer().getDbId(), dateToSend));
+                                    }
                                 }
                             }
                         } catch (Exception e) {
@@ -105,9 +124,23 @@ public class UtilMethods {
                             Log.e("Error!", "Unable to process message: " + processingMessage);
                         }
                     }
-                    //TODO: operacje na odebranych data
                 }
             }
         }
     };
+
+    private static Point2D getPoint(String pointName) {
+        double lat = MainActivity.sSelectedField.getCoordinates().get(pointName).get("lat");
+        double lon = MainActivity.sSelectedField.getCoordinates().get(pointName).get("lon");
+        return new Point2D(lat,lon);
+    }
+
+
+    public static int getPixelPositionByPoints(Point2D leftOrUpperPoint, Point2D rightOrDownPoint, Point2D playerPosition){
+        double K = (leftOrUpperPoint.y - rightOrDownPoint.y) / (leftOrUpperPoint.x - rightOrDownPoint.x); // pomocniczy współczynnik
+        double M = leftOrUpperPoint.y - (K * leftOrUpperPoint.x);
+        double x = Math.abs(K*playerPosition.x - playerPosition.y + M) / Math.sqrt(Math.pow(K,2) + 1);
+        double d = Math.sqrt(Math.pow((rightOrDownPoint.x - leftOrUpperPoint.x),2) + Math.pow((rightOrDownPoint.y - leftOrUpperPoint.y),2));
+        return (int) ((1000 * x) / d);
+    }
 }

@@ -77,4 +77,7 @@ public class Field implements Parcelable {
         }
     };
 
+    public Map<String, Map<String, Double>> getCoordinates() {
+        return coordinates;
+    }
 }
