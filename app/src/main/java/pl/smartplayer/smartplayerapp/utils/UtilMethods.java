@@ -107,13 +107,9 @@ public class UtilMethods {
                                 for(PlayerOnGame player : MainActivity.mPlayersOnGameList){
                                     if(player.getModuleMac().equals(serviceAdress)){
 
-                                        Point2D playerPosition = new Point2D(correctLon, correctLat);
-                                        Point2D leftDown = getPoint("leftDown");
-                                        Point2D leftUp = getPoint("leftUp");
-                                        Point2D rightUp = getPoint("rightUp");
 
-                                        player.setPosition(getPixelPositionByPoints(leftUp,leftDown,playerPosition),
-                                                getPixelPositionByPoints(leftUp,rightUp,playerPosition));
+                                        Point2D playerPosition = new Point2D(correctLon, correctLat);
+                                        player.setPosition(getPixelPosition(playerPosition));
 
                                         PositionsProcessor.addResultToJson(new PositionsRequest(playerPosition, player.getPlayer().getDbId(), dateToSend));
                                     }
@@ -137,10 +133,80 @@ public class UtilMethods {
 
 
     public static int getPixelPositionByPoints(Point2D leftOrUpperPoint, Point2D rightOrDownPoint, Point2D playerPosition){
+
+        Point2D leftDown = getPoint("leftDown");
+        Point2D leftUp = getPoint("leftUp");
+        Point2D rightUp = getPoint("rightUp");
+
         double K = (leftOrUpperPoint.y - rightOrDownPoint.y) / (leftOrUpperPoint.x - rightOrDownPoint.x); // pomocniczy współczynnik
         double M = leftOrUpperPoint.y - (K * leftOrUpperPoint.x);
-        double x = Math.abs(K*playerPosition.x - playerPosition.y + M) / Math.sqrt(Math.pow(K,2) + 1);
+        double x = (K*playerPosition.x - playerPosition.y + M) / Math.sqrt(Math.pow(K,2) + 1);
+
         double d = Math.sqrt(Math.pow((rightOrDownPoint.x - leftOrUpperPoint.x),2) + Math.pow((rightOrDownPoint.y - leftOrUpperPoint.y),2));
-        return (int) ((1000 * x) / d);
+        int position =  (int) ((1000 * x) / d);
+        if(position < 0) {
+            position = -5;
+        } else if (position > 1000){
+            position = 1005;
+        }
+        return position;
+    }
+
+    public static Point getPixelPosition(Point2D playerPosition){
+
+        Point2D leftDown = getPoint("leftDown");
+        Point2D leftUp = getPoint("leftUp");
+        Point2D rightUp = getPoint("rightUp");
+        Point2D rightDown = getPoint("rightDown");
+
+        double K = (leftUp.y - leftDown.y) / (leftUp.x - leftDown.x); // pomocniczy współczynnik
+        double M = leftUp.y - (K * leftUp.x);
+        double x = Math.abs(K*playerPosition.x - playerPosition.y + M) / Math.sqrt(Math.pow(K,2) + 1);
+
+        double d = Math.sqrt(Math.pow((leftDown.x - leftUp.x),2) + Math.pow((leftDown.y - leftUp.y),2));
+        int positionX =  (int) ((1000 * x) / d);
+
+
+        //KONTROLNE CZY NA PEWNO JEST POMIĘDZY OBIEMA LINIAMI
+        double Kk = (rightUp.y - rightDown.y) / (rightUp.x - rightDown.x);
+        double Mk = rightUp.y - (Kk * rightUp.x);
+        double xk = Math.abs(Kk*playerPosition.x - playerPosition.y + Mk) / Math.sqrt(Math.pow(Kk,2) + 1);
+
+        double dk = Math.sqrt(Math.pow((rightDown.x - rightUp.x),2) + Math.pow((rightDown.y - rightUp.y),2));
+        int positionXk =  (int) ((1000 * xk) / dk);
+
+        if(positionX < 1000 && positionXk<1000){
+        } else if (positionX > positionXk){
+            positionX = 1010;
+        } else if (positionX < positionXk){
+            positionX = -10;
+        }
+
+
+        double Kd = (leftUp.y - rightUp.y) / (leftUp.x - rightUp.x); // pomocniczy współczynnik
+        double Md = leftUp.y - (Kd * leftUp.x);
+        double xd = Math.abs(Kd*playerPosition.x - playerPosition.y + Md) / Math.sqrt(Math.pow(Kd,2) + 1);
+
+        double dd = Math.sqrt(Math.pow((rightUp.x - leftUp.x),2) + Math.pow((rightUp.y - leftUp.y),2));
+        int positionY =  (int) ((1000 * xd) / dd);
+
+
+        //KONTROLNE CZY NA PEWNO JEST POMIĘDZY OBIEMA LINIAMI
+        double Kkd = (leftDown.y - rightDown.y) / (leftDown.x - rightDown.x);
+        double Mkd = leftDown.y - (Kkd * leftDown.x);
+        double xkd = Math.abs(Kkd*playerPosition.x - playerPosition.y + Mkd) / Math.sqrt(Math.pow(Kkd,2) + 1);
+
+        double dkd = Math.sqrt(Math.pow((rightDown.x - leftDown.x),2) + Math.pow((rightDown.y - leftDown.y),2));
+        int positionYk =  (int) ((1000 * xkd) / dkd);
+
+        if(positionY < 1000 && positionYk<1000){
+
+        } else if (positionY > positionYk){
+            positionY = 1010;
+        } else if (positionY < positionYk){
+            positionY = -10;
+        }
+
+        return new Point(positionX,positionY);
     }
 }

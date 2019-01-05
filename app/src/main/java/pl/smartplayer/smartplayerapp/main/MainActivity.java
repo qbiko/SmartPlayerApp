@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private MldpBluetoothService bleService;
     public static Field sSelectedField = null;
     public static List<PlayerOnGame> mPlayersOnGameList = new ArrayList<>();
-    public static final int sClubId = 1;
+    public static final int sClubId = 3;
     public static final int sTeamId = 1;
 
     @BindView(R.id.players_list_view)

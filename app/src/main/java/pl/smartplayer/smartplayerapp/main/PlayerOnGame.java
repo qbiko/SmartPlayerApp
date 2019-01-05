@@ -30,6 +30,7 @@ public class PlayerOnGame implements Parcelable {
 
     private PlayerOnGame(Parcel parcel) {
         this.number = parcel.readInt();
+        this.moduleMac = parcel.readString();
         this.player = parcel.readParcelable(Player.class.getClassLoader());
     }
 
@@ -41,8 +42,8 @@ public class PlayerOnGame implements Parcelable {
         return player;
     }
 
-    public void setPosition(int x, int y){
-        position.set(x,y);
+    public void setPosition(Point point){
+        position = point;
     }
 
     public Point getPosition(){
@@ -61,6 +62,7 @@ public class PlayerOnGame implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(number);
+        parcel.writeString(moduleMac);
         parcel.writeParcelable(player, i);
     }
 
