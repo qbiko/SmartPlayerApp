@@ -64,21 +64,20 @@ public class UtilMethods {
         adapter.notifyDataSetChanged();
     }
 
+    static String message = "";
     // ----------------------------------------------------------------------------------------------------------------
     // BroadcastReceiver handles various events fired by the MldpBluetoothService service.
     public static final BroadcastReceiver bleServiceReceiver = new BroadcastReceiver() {
-        private String message = "";
 
         @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(!MainActivity.isGameActive() || MainActivity.sGameId == 0){
-                return;
-            }
+
 
             final String action = intent.getAction();
             if (MldpBluetoothService.ACTION_BLE_DATA_RECEIVED.equals(action)) {
                 String data = intent.getStringExtra(MldpBluetoothService.INTENT_EXTRA_SERVICE_DATA);
+
                 String serviceAdress = intent.getStringExtra(MldpBluetoothService.INTENT_EXTRA_SERVICE_ADDRESS);
 
                 if (data != null) {
@@ -94,7 +93,7 @@ public class UtilMethods {
 
                         try {
                             if (processingMessagePart[0].equals("GNGGA")) {
-                                Log.e("Error!", "Processing message: " + processingMessage);
+                                Log.d("Odebrano!", "Processing message: " + processingMessage);
                                 SimpleDateFormat sdf = new SimpleDateFormat("HHmmss.SS");
                                 Date dateToSend = sdf.parse(processingMessagePart[1]);
 
@@ -116,15 +115,17 @@ public class UtilMethods {
                                         Point2D playerPosition = new Point2D(correctLon, correctLat);
                                         player.setPosition(getPixelPosition(playerPosition));
 
-                                        if(player.getCartographicalPosition() == null){
-                                            player.setCartographicalPosition(playerPosition);
-                                        } else {
-                                            Point2D point2D = player.getCartographicalPosition();
-                                            player.setDistance(player.getDistance() + measureMeters(point2D.x,point2D.y,playerPosition.x,playerPosition.y)/1000.0);
-                                            player.setCartographicalPosition(playerPosition);
-                                        }
+                                        if(!MainActivity.isGameActive() || MainActivity.sGameId == 0){
+                                            if(player.getCartographicalPosition() == null){
+                                                player.setCartographicalPosition(playerPosition);
+                                            } else {
+                                                Point2D point2D = player.getCartographicalPosition();
+                                                player.setDistance(player.getDistance() + measureMeters(point2D.x,point2D.y,playerPosition.x,playerPosition.y)/1000.0);
+                                                player.setCartographicalPosition(playerPosition);
+                                            }
 
-                                        PositionsProcessor.addResultToJson(new PositionsRequest(playerPosition, player.getPlayer().getDbId(), dateToSend));
+                                            PositionsProcessor.addResultToJson(new PositionsRequest(playerPosition, player.getPlayer().getDbId(), dateToSend));
+                                        }
                                     }
                                 }
                             }
