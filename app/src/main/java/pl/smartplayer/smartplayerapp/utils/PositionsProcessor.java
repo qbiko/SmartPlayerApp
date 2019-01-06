@@ -80,7 +80,7 @@ public class PositionsProcessor {
         }
 
         requestCount++;
-        if (requestCount == 20) {
+        if (requestCount == 10) {
             requestCount = 0;
             try {
                 sendResults();
@@ -122,9 +122,6 @@ public class PositionsProcessor {
 
         JSONParser parser = new JSONParser();
         JSONObject mainObject = (JSONObject) parser.parse(new FileReader(filePath));
-
-        File file = new File(filePath);
-        file.delete();
 
         GameService gameService = ApiClient.getClient().create(GameService.class);
         Call<Void> call = gameService.sendResultsFile(mainObject);
