@@ -72,7 +72,7 @@ public class UtilMethods {
         @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(!MainActivity.isGameActive()){
+            if(!MainActivity.isGameActive() || MainActivity.sGameId == 0){
                 return;
             }
 
