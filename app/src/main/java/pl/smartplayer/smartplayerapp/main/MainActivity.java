@@ -20,6 +20,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -123,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
     TextView _playerHeightTextView;
     @BindView(R.id.field_name_text_view)
     TextView _fieldNameTextView;
+    @BindView(R.id.player_distance_text_view)
+    TextView _playerDistanceTextView;
 
     private static Boolean sIsGameActive = false;
 
@@ -240,13 +243,29 @@ public class MainActivity extends AppCompatActivity {
         };
         Call<List<Team>> call = teamService.getTeamsByClubId(sClubId);
         call.enqueue(teamCallback);
+
+
+        RepaintTask repaintTask = new RepaintTask(MainActivity.this);
+        repaintTask.execute();
     }
 
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        if(sSelectedField != null)
+        if(sSelectedField != null){
             _fieldNameTextView.setText(sSelectedField.getName());
+        }
+        if(mSelectedPlayer != null){
+            _playerNameTextView.setText(mSelectedPlayer.getPlayer().getFirstName() + " " +
+                    "" + mSelectedPlayer.getPlayer().getLastName());
+            _playerNumberTextView.setText(Integer.toString(mSelectedPlayer.getNumber()));
+
+            _playerAgeTextView.setText(Integer.toString(mSelectedPlayer.getPlayer().getAge()));
+            _playerHeightTextView.setText(Integer.toString(mSelectedPlayer.getPlayer().getHeight()));
+            _playerWeightTextView.setText(Integer.toString(mSelectedPlayer.getPlayer().getWeight()));
+            _playerDistanceTextView.setText(String.format("%.3f",mSelectedPlayer.getDistance()));
+        }
+
     }
 
     @Override
@@ -256,7 +275,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void repaintImageView() {
-        int size = 15;
+        Log.i("Repainting","ImageView");
+        int size = 30;
         Bitmap myBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.field);
         Bitmap newBitmap = myBitmap.copy(Bitmap.Config.ARGB_8888, true);
         Paint myRectPaint = new Paint();
@@ -288,9 +308,15 @@ public class MainActivity extends AppCompatActivity {
                 String number = String.valueOf(player.getNumber());
                 int xTextPosition = number.length() == 1 ? xPlayerPosition - size / 2 : xPlayerPosition - size; //Tak aby napis był mniejwięcej w centrum kształtu
                 tempCanvas.drawText(number, xTextPosition, yPlayerPosition + size * 0.75f, textPaint);
+
+                Log.i("Repainting","Player:" + player.getNumber() + " X: " + player.getPosition().x + " Y: " + player.getPosition().y);
+            }
+            if(mSelectedPlayer!= null){
+                _playerDistanceTextView.setText(String.valueOf(mSelectedPlayer.getDistance()));
             }
         }
         _fieldView.setImageDrawable(new BitmapDrawable(getResources(), newBitmap));
+
     }
 
     @Override
@@ -352,7 +378,7 @@ public class MainActivity extends AppCompatActivity {
             builder.setTitle(R.string.enter_opponent_name_dialog_title);
 
             final EditText input = new EditText(this);
-            input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            input.setInputType(InputType.TYPE_CLASS_TEXT );
             builder.setView(input);
 
             builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -375,9 +401,6 @@ public class MainActivity extends AppCompatActivity {
                     GameService gameService = ApiClient.getClient().create(GameService.class);
                     Call<JSONObject> call = gameService.createNewGame(object);
                     call.enqueue(callback);
-
-                    RepaintTask repaintTask = new RepaintTask(MainActivity.this);
-                    repaintTask.execute();
 
                     sIsGameActive = true;
                 }

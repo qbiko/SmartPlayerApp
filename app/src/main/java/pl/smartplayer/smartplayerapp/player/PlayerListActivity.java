@@ -176,6 +176,7 @@ public class PlayerListActivity extends AppCompatActivity {
 
         Toast.makeText(this,R.string.connecting, Toast.LENGTH_LONG).show();
         if(bleService != null) {                                                                    //Service will not have started when activity first starts but this ensures a scan if resuming from pause
+            bleService.disconnect();
             scanStart();
         }
     }

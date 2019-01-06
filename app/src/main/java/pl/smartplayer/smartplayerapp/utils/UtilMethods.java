@@ -13,9 +13,7 @@ import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.BaseAdapter;
-import android.widget.Toast;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -94,8 +92,12 @@ public class UtilMethods {
                         try {
                             if (processingMessagePart[0].equals("GNGGA")) {
                                 Log.d("Odebrano!", "Processing message: " + processingMessage);
-                                SimpleDateFormat sdf = new SimpleDateFormat("HHmmss.SS");
-                                Date dateToSend = sdf.parse(processingMessagePart[1]);
+
+                                SimpleDateFormat sdf = new SimpleDateFormat("DD-MM-YYYYHHmmss.SS");
+
+                                SimpleDateFormat dmyform = new SimpleDateFormat("DD-MM-YYYY");
+
+                                Date dateToSend =sdf.parse( dmyform.format(new Date()) + processingMessagePart[1]);
 
                                 Double nmeaLat = Double.parseDouble(processingMessagePart[2]);
                                 Double nmeaLon = Double.parseDouble(processingMessagePart[4]);
@@ -112,7 +114,7 @@ public class UtilMethods {
                                 for(PlayerOnGame player : MainActivity.mPlayersOnGameList){
                                     if(player.getModuleMac().equals(serviceAdress)){
 
-                                        Point2D playerPosition = new Point2D(correctLon, correctLat);
+                                        Point2D playerPosition = new Point2D(correctLat, correctLon);
                                         player.setPosition(getPixelPosition(playerPosition));
 
                                         if(MainActivity.isGameActive() && MainActivity.sGameId != 0){
@@ -145,27 +147,6 @@ public class UtilMethods {
         return new Point2D(lat,lon);
     }
 
-
-    public static int getPixelPositionByPoints(Point2D leftOrUpperPoint, Point2D rightOrDownPoint, Point2D playerPosition){
-
-        Point2D leftDown = getPoint("leftDown");
-        Point2D leftUp = getPoint("leftUp");
-        Point2D rightUp = getPoint("rightUp");
-
-        double K = (leftOrUpperPoint.y - rightOrDownPoint.y) / (leftOrUpperPoint.x - rightOrDownPoint.x); // pomocniczy współczynnik
-        double M = leftOrUpperPoint.y - (K * leftOrUpperPoint.x);
-        double x = (K*playerPosition.x - playerPosition.y + M) / Math.sqrt(Math.pow(K,2) + 1);
-
-        double d = Math.sqrt(Math.pow((rightOrDownPoint.x - leftOrUpperPoint.x),2) + Math.pow((rightOrDownPoint.y - leftOrUpperPoint.y),2));
-        int position =  (int) ((1000 * x) / d);
-        if(position < 0) {
-            position = -5;
-        } else if (position > 1000){
-            position = 1005;
-        }
-        return position;
-    }
-
     public static Point getPixelPosition(Point2D playerPosition){
 
         Point2D leftDown = getPoint("leftDown");
@@ -177,7 +158,7 @@ public class UtilMethods {
         double M = leftUp.y - (K * leftUp.x);
         double x = Math.abs(K*playerPosition.x - playerPosition.y + M) / Math.sqrt(Math.pow(K,2) + 1);
 
-        double d = Math.sqrt(Math.pow((leftDown.x - leftUp.x),2) + Math.pow((leftDown.y - leftUp.y),2));
+        double d = Math.sqrt(Math.pow((leftDown.x - rightDown.x),2) + Math.pow((leftDown.y - rightDown.y),2));
         int positionX =  (int) ((1000 * x) / d);
 
 
@@ -186,14 +167,15 @@ public class UtilMethods {
         double Mk = rightUp.y - (Kk * rightUp.x);
         double xk = Math.abs(Kk*playerPosition.x - playerPosition.y + Mk) / Math.sqrt(Math.pow(Kk,2) + 1);
 
-        double dk = Math.sqrt(Math.pow((rightDown.x - rightUp.x),2) + Math.pow((rightDown.y - rightUp.y),2));
+        double dk = Math.sqrt(Math.pow((leftUp.x - rightUp.x),2) + Math.pow((leftUp.y - rightUp.y),2));
         int positionXk =  (int) ((1000 * xk) / dk);
 
         if(positionX < 1000 && positionXk<1000){
+
         } else if (positionX > positionXk){
-            positionX = 1010;
+            positionX = 1000;
         } else if (positionX < positionXk){
-            positionX = -10;
+            positionX = 0;
         }
 
 
@@ -201,7 +183,7 @@ public class UtilMethods {
         double Md = leftUp.y - (Kd * leftUp.x);
         double xd = Math.abs(Kd*playerPosition.x - playerPosition.y + Md) / Math.sqrt(Math.pow(Kd,2) + 1);
 
-        double dd = Math.sqrt(Math.pow((rightUp.x - leftUp.x),2) + Math.pow((rightUp.y - leftUp.y),2));
+        double dd = Math.sqrt(Math.pow((leftUp.x - leftDown.x),2) + Math.pow((leftUp.y - leftDown.y),2));
         int positionY =  (int) ((1000 * xd) / dd);
 
 
@@ -210,21 +192,24 @@ public class UtilMethods {
         double Mkd = leftDown.y - (Kkd * leftDown.x);
         double xkd = Math.abs(Kkd*playerPosition.x - playerPosition.y + Mkd) / Math.sqrt(Math.pow(Kkd,2) + 1);
 
-        double dkd = Math.sqrt(Math.pow((rightDown.x - leftDown.x),2) + Math.pow((rightDown.y - leftDown.y),2));
+        double dkd = Math.sqrt(Math.pow((rightUp.x - rightDown.x),2) + Math.pow((rightUp.y - rightDown.y),2));
         int positionYk =  (int) ((1000 * xkd) / dkd);
 
         if(positionY < 1000 && positionYk<1000){
 
         } else if (positionY > positionYk){
-            positionY = 1010;
+            positionY = 1000;
         } else if (positionY < positionYk){
-            positionY = -10;
+            positionY = 0;
         }
 
         return new Point(positionX,positionY);
     }
 
     private static double measureMeters(double lat1,double lon1,double lat2,double lon2){  // generally used geo measurement function
+        if(lat1 == 0 && lon1 == 0)
+            return 0.0;
+
         double R = 6378.137; // Radius of earth in KM
         double dLat = lat2 * Math.PI / 180 - lat1 * Math.PI / 180;
         double dLon = lon2 * Math.PI / 180 - lon1 * Math.PI / 180;

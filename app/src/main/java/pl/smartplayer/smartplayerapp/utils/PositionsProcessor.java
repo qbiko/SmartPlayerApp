@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -80,12 +81,14 @@ public class PositionsProcessor {
         }
 
         requestCount++;
+        Log.d("Iteration:",String.valueOf(requestCount));
         if (requestCount == 10) {
             requestCount = 0;
             try {
                 sendResults();
+
             } catch (IOException | ParseException e) {
-                //Tutaj nie musimy się niczym zbytnio przejmować. Wysłanie wyników odbędzie się przy kolejnym podejściu
+                e.printStackTrace();
             }
         }
     }
@@ -110,7 +113,7 @@ public class PositionsProcessor {
         JSONObject mainObject = new JSONObject();
 
         mainObject.put("teamId", MainActivity.sClubId);
-        mainObject.put("sGameId", MainActivity.sGameId);
+        mainObject.put("gameId", MainActivity.sGameId);
         JSONArray playersArray = new JSONArray();
         mainObject.put("players", playersArray);
         return mainObject;
@@ -143,6 +146,7 @@ public class PositionsProcessor {
         @Override
         public void onResponse(Call<Void> call, Response<Void> response) {
             if(response.isSuccessful()){
+                Log.i("Sending data complete","Deleting File");
                 File file = new File(getFilePath());
                 file.delete();
             }

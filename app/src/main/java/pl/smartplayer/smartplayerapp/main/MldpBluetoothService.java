@@ -283,7 +283,7 @@ public class MldpBluetoothService extends Service {
             try {
                 if (UUID_MLDP_DATA_PRIVATE_CHAR.equals(characteristic.getUuid()) || UUID_TRANSPARENT_TX_PRIVATE_CHAR.equals(characteristic.getUuid())) {                     //See if it is the MLDP data characteristic
                     String dataValue = characteristic.getStringValue(0);                          // Get the data in string format
-                    Log.d(TAG, "New notification or indication");
+                    //Log.d(TAG, "New notification or indication");
                     final Intent intent = new Intent(ACTION_BLE_DATA_RECEIVED);                         //Create the intent to announce the new data
                     intent.putExtra(INTENT_EXTRA_SERVICE_DATA, dataValue);             //Add the data to the intent
                     intent.putExtra(INTENT_EXTRA_SERVICE_ADDRESS, gatt.getDevice().getAddress());
@@ -366,14 +366,7 @@ public class MldpBluetoothService extends Service {
     // The bleScanCallback method is called each time a device is found during the scan
     public void scanStart() {
         try {
-            if (Build.VERSION.SDK_INT >= 21) { //Build.VERSION_CODES.LOLLIPOP) {
-                bluetoothAdapter.getBluetoothLeScanner().startScan(bleLolipopScanCallback);                                          //Start scanning with callback method to execute when a new BLE device is found
-//                bluetoothAdapter.startLeScan(uuidScanList, bleScanCallback);                            //Start scanning with callback method to execute when a new BLE device is found
-            }
-            else {
-                bluetoothAdapter.startLeScan(bleScanCallback);                             //Start scanning with callback method to execute when a new BLE device is found
-                //Start scanning with callback method to execute when a new BLE device is found
-            }
+                bluetoothAdapter.startLeScan(bleScanCallback);
             //bluetoothAdapter.getBluetoothLeScanner().startScan(bleScanCallback);                                          //Start scanning with callback method to execute when a new BLE device is found
 
         } catch (Exception e) {
@@ -385,12 +378,7 @@ public class MldpBluetoothService extends Service {
     // Stop scan for BLE devices
     public void scanStop() {
         try {
-            if (Build.VERSION.SDK_INT >= 21) { //Build.VERSION_CODES.LOLLIPOP) {
-                bluetoothAdapter.getBluetoothLeScanner().stopScan(bleLolipopScanCallback);
-            }
-            else {
                 bluetoothAdapter.stopLeScan(bleScanCallback);
-            }
             // bluetoothAdapter.getBluetoothLeScanner().stopScan(bleScanCallback); 		                                        //Stop scanning - callback method indicates which scan to stop
         } catch (Exception e) {
             Log.e(TAG, "Oops, exception caught in " + e.getStackTrace()[0].getMethodName() + ": " + e.getMessage());
