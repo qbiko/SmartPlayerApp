@@ -343,10 +343,10 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), R.string.select_field_before_game_start, Toast.LENGTH_LONG).show();
                 return;
             }
-/*            if (mPlayersOnGameList.isEmpty()) {
+            if (mPlayersOnGameList.isEmpty()) {
                 Toast.makeText(getApplicationContext(), R.string.add_player_before_game_start, Toast.LENGTH_SHORT).show();
                 return;
-            }*/
+            }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.enter_opponent_name_dialog_title);
