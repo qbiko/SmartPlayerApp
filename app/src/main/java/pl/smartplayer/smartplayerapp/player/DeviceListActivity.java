@@ -47,6 +47,7 @@ public class DeviceListActivity extends Activity {
 
         mAdapter.setData(mDeviceList);
         mAdapter.setListener(new DeviceListAdapter.OnPairButtonClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
             @Override
             public void onPairButtonClick(int position) {
                 BluetoothDevice device = mDeviceList.get(position);
@@ -86,6 +87,7 @@ public class DeviceListActivity extends Activity {
     private void pairDevice(BluetoothDevice device) {
         try {
             //mCurrentAddressMac = device.getAddress();
+            bleService.disconnect();
             bleService.connect(device.getAddress());
             Intent returnIntent = new Intent();
             returnIntent.putExtra("addressMac", device.getAddress());

@@ -80,4 +80,8 @@ public class Field implements Parcelable {
     public Map<String, Map<String, Double>> getCoordinates() {
         return coordinates;
     }
+
+    public long getDbId() {
+        return dbId;
+    }
 }

@@ -75,7 +75,7 @@ public class PlayerListActivity extends AppCompatActivity {
     private MldpBluetoothService bleService;
     private Handler scanStopHandler;
     private boolean areScanning;
-    private static final long SCAN_TIME = 10000;						                            //Length of time in milliseconds to scan for BLE devices
+    private static final long SCAN_TIME = 5000;						                            //Length of time in milliseconds to scan for BLE devices
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -290,11 +290,11 @@ public class PlayerListActivity extends AppCompatActivity {
         @Override
         public void run() {
             scanStop();
-            Log.i("Test","Action scan end");
-            Intent newIntent = new Intent(PlayerListActivity.this, DeviceListActivity.class);
             Set<BluetoothDevice> set = new HashSet<>(mDeviceList);
             mDeviceList.clear();
             mDeviceList.addAll(set);
+
+            Intent newIntent = new Intent(PlayerListActivity.this, DeviceListActivity.class);
             newIntent.putParcelableArrayListExtra("devices", mDeviceList);
 
             startActivityForResult(newIntent, CONNECT_WITH_DEVICE_REQUEST);

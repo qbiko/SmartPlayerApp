@@ -7,6 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public abstract class ApiClient {
     static final String BASE_URL = "http://192.168.0.104:5001/";
+    //static final String BASE_URL = "https://smartplayerauthorizationwebapi20190102105923.azurewebsites.net/";
 
     private static Retrofit retrofit = null;
 

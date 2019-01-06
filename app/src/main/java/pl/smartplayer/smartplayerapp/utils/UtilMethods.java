@@ -13,6 +13,7 @@ import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.BaseAdapter;
+import android.widget.Toast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -71,13 +72,17 @@ public class UtilMethods {
         @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
         @Override
         public void onReceive(Context context, Intent intent) {
+            if(!MainActivity.isGameActive()){
+                return;
+            }
+
             final String action = intent.getAction();
             if (MldpBluetoothService.ACTION_BLE_DATA_RECEIVED.equals(action)) {
                 String data = intent.getStringExtra(MldpBluetoothService.INTENT_EXTRA_SERVICE_DATA);
                 String serviceAdress = intent.getStringExtra(MldpBluetoothService.INTENT_EXTRA_SERVICE_ADDRESS);
 
                 if (data != null) {
-                    message = message.concat(data);
+                    message = message + data;
                     String messages[] = message.split("\\$");
                     if (messages.length > 1) {
                         String processingMessage = messages[0];
@@ -89,6 +94,7 @@ public class UtilMethods {
 
                         try {
                             if (processingMessagePart[0].equals("GNGGA")) {
+                                Log.e("Error!", "Processing message: " + processingMessage);
                                 SimpleDateFormat sdf = new SimpleDateFormat("HHmmss.SS");
                                 Date dateToSend = sdf.parse(processingMessagePart[1]);
 
@@ -107,9 +113,16 @@ public class UtilMethods {
                                 for(PlayerOnGame player : MainActivity.mPlayersOnGameList){
                                     if(player.getModuleMac().equals(serviceAdress)){
 
-
                                         Point2D playerPosition = new Point2D(correctLon, correctLat);
                                         player.setPosition(getPixelPosition(playerPosition));
+
+                                        if(player.getCartographicalPosition() == null){
+                                            player.setCartographicalPosition(playerPosition);
+                                        } else {
+                                            Point2D point2D = player.getCartographicalPosition();
+                                            player.setDistance(player.getDistance() + measureMeters(point2D.x,point2D.y,playerPosition.x,playerPosition.y)/1000.0);
+                                            player.setCartographicalPosition(playerPosition);
+                                        }
 
                                         PositionsProcessor.addResultToJson(new PositionsRequest(playerPosition, player.getPlayer().getDbId(), dateToSend));
                                     }
@@ -208,5 +221,17 @@ public class UtilMethods {
         }
 
         return new Point(positionX,positionY);
+    }
+
+    private static double measureMeters(double lat1,double lon1,double lat2,double lon2){  // generally used geo measurement function
+        double R = 6378.137; // Radius of earth in KM
+        double dLat = lat2 * Math.PI / 180 - lat1 * Math.PI / 180;
+        double dLon = lon2 * Math.PI / 180 - lon1 * Math.PI / 180;
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                        Math.sin(dLon/2) * Math.sin(dLon/2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double d = R * c;
+        return d * 1000; // meters
     }
 }

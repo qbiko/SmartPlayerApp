@@ -26,6 +26,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import org.json.simple.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,9 +39,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 import pl.smartplayer.smartplayerapp.R;
+import pl.smartplayer.smartplayerapp.api.ApiClient;
+import pl.smartplayer.smartplayerapp.api.GameService;
 import pl.smartplayer.smartplayerapp.field.ChooseFieldActivity;
 import pl.smartplayer.smartplayerapp.field.Field;
 import pl.smartplayer.smartplayerapp.player.PlayerListActivity;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CHOOSE_FIELD_REQUEST;
 import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CHOOSE_PLAYER_REQUEST;
@@ -58,8 +66,11 @@ public class MainActivity extends AppCompatActivity {
     private MldpBluetoothService bleService;
     public static Field sSelectedField = null;
     public static List<PlayerOnGame> mPlayersOnGameList = new ArrayList<>();
-    public static final int sClubId = 3;
+    //public static final int sClubId = 3;
+    public static final int sClubId = 1;
     public static final int sTeamId = 1;
+    public static int sGameId = 0;
+
 
     @BindView(R.id.players_list_view)
     ListView _playersListView;
@@ -198,6 +209,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        if(sSelectedField != null)
+            _fieldNameTextView.setText(sSelectedField.getName());
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         unbindService(bleServiceConnection);
@@ -283,6 +301,7 @@ public class MainActivity extends AppCompatActivity {
         view.setSelected(true);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @OnClick(R.id.start_stop_event_button)
     public void startGame() {
         if (!sIsGameActive) {
@@ -294,12 +313,20 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), R.string.add_player_before_game_start, Toast.LENGTH_SHORT).show();
                 return;
             }
-            sIsGameActive = true;
+            JSONObject object = new JSONObject();
+            object.put("host","host");
+            object.put("opponent","opponent");
+            object.put("teamId",sTeamId);
+            object.put("fieldId",sSelectedField.getDbId());
 
-            // TODO: Jak Seba zrobi endpointa to trzeba tu wywołać createGame i przekazać jakoś gameID dalej (Może do tego BTMock, z tego dalej do PositionsProcessora)
+            GameService gameService = ApiClient.getClient().create(GameService.class);
+            Call<JSONObject> call = gameService.createNewGame(object);
+            call.enqueue(callback);
 
             RepaintTask repaintTask = new RepaintTask(this);
             repaintTask.execute();
+
+            sIsGameActive = true;
         }
     }
 
@@ -324,4 +351,15 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private Callback<JSONObject> callback = new Callback<JSONObject>() {
+        @Override
+        public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+            sGameId = (int) Double.parseDouble(response.body().get("id").toString());
+        }
+
+        @Override
+        public void onFailure(Call<JSONObject> call, Throwable t) {
+
+        }
+    };
 }

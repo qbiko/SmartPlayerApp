@@ -8,13 +8,16 @@ import android.os.Parcelable;
 import java.util.Objects;
 
 import pl.smartplayer.smartplayerapp.player.Player;
+import pl.smartplayer.smartplayerapp.utils.Point2D;
 
 public class PlayerOnGame implements Parcelable {
 
     private int number;
     private Player player;
     private Point position = new Point(500,1000);
+    private Point2D cartographicalPosition = new Point2D(0,0);
     private String moduleMac = "";
+    private Double distance = 0.0;
 
     public PlayerOnGame(int number, Player player) {
         this.number = number;
@@ -44,6 +47,7 @@ public class PlayerOnGame implements Parcelable {
 
     public void setPosition(Point point){
         position = point;
+
     }
 
     public Point getPosition(){
@@ -54,6 +58,21 @@ public class PlayerOnGame implements Parcelable {
         return moduleMac;
     }
 
+    public Point2D getCartographicalPosition() {
+        return cartographicalPosition;
+    }
+
+    public void setCartographicalPosition(Point2D cartographicalPosition) {
+        this.cartographicalPosition = cartographicalPosition;
+    }
+
+    public Double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(Double distance) {
+        this.distance = distance;
+    }
     @Override
     public int describeContents() {
         return 0;

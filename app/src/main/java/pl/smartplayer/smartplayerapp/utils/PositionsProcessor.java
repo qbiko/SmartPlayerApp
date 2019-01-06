@@ -110,7 +110,7 @@ public class PositionsProcessor {
         JSONObject mainObject = new JSONObject();
 
         mainObject.put("teamId", MainActivity.sClubId);
-        mainObject.put("gameId", 2); // TODO: Jak Seba zrobi endpointa...
+        mainObject.put("sGameId", MainActivity.sGameId);
         JSONArray playersArray = new JSONArray();
         mainObject.put("players", playersArray);
         return mainObject;

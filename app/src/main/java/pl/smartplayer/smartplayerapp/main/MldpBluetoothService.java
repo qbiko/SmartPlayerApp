@@ -286,8 +286,7 @@ public class MldpBluetoothService extends Service {
             try {
                 android.os.Debug.waitForDebugger();
                 if (UUID_MLDP_DATA_PRIVATE_CHAR.equals(characteristic.getUuid()) || UUID_TRANSPARENT_TX_PRIVATE_CHAR.equals(characteristic.getUuid())) {                     //See if it is the MLDP data characteristic
-                    String dataValue = characteristic.getStringValue(0);    //TODO: Spróbować brać stąd mac
-                    // Get the data in string format
+                    String dataValue = characteristic.getStringValue(0);                          // Get the data in string format
                     //byte[] dataValue = characteristic.getValue();                                     //Example of getting data in a byte array
                     Log.d(TAG, "New notification or indication");
                     final Intent intent = new Intent(ACTION_BLE_DATA_RECEIVED);                         //Create the intent to announce the new data
