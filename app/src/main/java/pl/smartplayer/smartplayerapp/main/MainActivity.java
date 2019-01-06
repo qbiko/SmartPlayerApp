@@ -71,8 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private MldpBluetoothService bleService;
     public static Field sSelectedField = null;
     public static List<PlayerOnGame> mPlayersOnGameList = new ArrayList<>();
-    //public static final int sClubId = 3;
-    public static final int sClubId = 1;
+    public static int sClubId = 1;
     public static final int sTeamId = 1;
     public static int sGameId = 0;
     public static String sTeamName = "Moja druzyna";
@@ -137,6 +136,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        sClubId = getIntent().getIntExtra("sClubId", 1);
+
         registerReceiver(bleServiceReceiver, new IntentFilter() {{
             addAction(MldpBluetoothService.ACTION_BLE_DATA_RECEIVED);
         }});
@@ -341,11 +343,10 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), R.string.select_field_before_game_start, Toast.LENGTH_LONG).show();
                 return;
             }
-            if (mPlayersOnGameList.isEmpty()) {
+/*            if (mPlayersOnGameList.isEmpty()) {
                 Toast.makeText(getApplicationContext(), R.string.add_player_before_game_start, Toast.LENGTH_SHORT).show();
                 return;
-            }
-            final String opponent = new String();
+            }*/
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.enter_opponent_name_dialog_title);
@@ -357,7 +358,28 @@ public class MainActivity extends AppCompatActivity {
             builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    opponent.concat(input.getText().toString());
+                    String opponent = input.getText().toString();
+
+                    if(opponent.isEmpty()) {
+                        Toast.makeText(getApplicationContext(), R.string.given_team_name_is_empty, Toast.LENGTH_SHORT)
+                                .show();
+                        return;
+                    }
+
+                    JSONObject object = new JSONObject();
+                    object.put("host",sTeamName);
+                    object.put("opponent",opponent);
+                    object.put("teamId",sTeamId);
+                    object.put("fieldId",sSelectedField.getDbId());
+
+                    GameService gameService = ApiClient.getClient().create(GameService.class);
+                    Call<JSONObject> call = gameService.createNewGame(object);
+                    call.enqueue(callback);
+
+                    RepaintTask repaintTask = new RepaintTask(MainActivity.this);
+                    repaintTask.execute();
+
+                    sIsGameActive = true;
                 }
             });
             builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -367,26 +389,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             builder.show();
-
-            if(opponent.isEmpty()) {
-                Toast.makeText(getApplicationContext(), R.string.add_player_before_game_start, Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            JSONObject object = new JSONObject();
-            object.put("host",sTeamName);
-            object.put("opponent",opponent);
-            object.put("teamId",sTeamId);
-            object.put("fieldId",sSelectedField.getDbId());
-
-            GameService gameService = ApiClient.getClient().create(GameService.class);
-            Call<JSONObject> call = gameService.createNewGame(object);
-            call.enqueue(callback);
-
-            RepaintTask repaintTask = new RepaintTask(this);
-            repaintTask.execute();
-
-            sIsGameActive = true;
         }
     }
 

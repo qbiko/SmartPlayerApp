@@ -85,16 +85,18 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful()) {
-                    onLoginSuccess();
+                    onLoginSuccess(response.body().getClubId());
                     progressDialog.dismiss();
                 } else {
                     onLoginFailed();
+                    progressDialog.dismiss();
                 }
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 onLoginFailed();
+                progressDialog.dismiss();
             }
         };
 
@@ -102,8 +104,9 @@ public class LoginActivity extends AppCompatActivity {
         call.enqueue(userCallback);
     }
 
-    public void onLoginSuccess() {
+    public void onLoginSuccess(int clubId) {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.putExtra("sClubId", clubId);
         startActivity(intent);
         _loginButton.setEnabled(true);
         finish();

@@ -12,11 +12,11 @@ public class User {
     @SerializedName("expiration")
     private Date expiration;
     @SerializedName("clubId")
-    private long clubId;
+    private int clubId;
     @SerializedName("userName")
     private String userName;
 
-    public long getClubId() {
+    public int getClubId() {
         return clubId;
     }
 }
