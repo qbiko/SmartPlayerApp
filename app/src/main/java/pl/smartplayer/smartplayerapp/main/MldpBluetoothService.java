@@ -35,15 +35,17 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
+
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
+
 import android.support.annotation.RequiresApi;
 
 /**
  * Service for handling Bluetooth communication with the RN4020 using the Microchip Low-energy Data Profile, MLDP.
- *
+ * <p>
  * This service uses the BluetoothAdapter.startLeScan() and stopLeScan() which have been deprecated in API level 21 (Android 5).
  * Rather use BluetoothLeScanner.startScan() and stopScan() if Android 4.x does not need to be supported.
  */
@@ -110,15 +112,13 @@ public class MldpBluetoothService extends Service {
             bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);          //Get a reference to BluetoothManager from the operating system
             if (bluetoothManager == null) {                                                             //Check that we did get a BluetoothManager
                 Log.e(TAG, "Unable to initialize the BluetoothManager");
-            }
-            else {
+            } else {
                 bluetoothAdapter = bluetoothManager.getAdapter();                                       //Get a reference to BluetoothAdapter from the BluetoothManager
                 if (bluetoothAdapter == null) {                                                         //Check that we did get a BluetoothAdapter
                     Log.e(TAG, "Unable to obtain a BluetoothAdapter");
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Oops, exception caught in " + e.getStackTrace()[0].getMethodName() + ": " + e.getMessage());
         }
     }
@@ -133,8 +133,7 @@ public class MldpBluetoothService extends Service {
                 bluetoothGatt.close();                                                                  //Close the connection as the service is ending
                 bluetoothGatt = null;                                                                   //Remove the reference to the connection we had
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Oops, exception caught in " + e.getStackTrace()[0].getMethodName() + ": " + e.getMessage());
         }
         super.onDestroy();
@@ -164,26 +163,22 @@ public class MldpBluetoothService extends Service {
                         descriptorWriteQueue.clear();                                                   //Clear write queues in case there was something left in the queue from the previous connection
                         characteristicWriteQueue.clear();
                         bluetoothGatt.discoverServices();                                               //Discover services after successful connection
-                    }
-                    else if (newState == BluetoothProfile.STATE_DISCONNECTED) {                         //Disconnected
+                    } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {                         //Disconnected
                         final Intent intent = new Intent(ACTION_BLE_DISCONNECTED);
                         sendBroadcast(intent);
                         Log.i(TAG, "Disconnected from BLE device");
                     }
-                }
-                else {                                                                                  //Something went wrong with the connection or disconnection request
+                } else {                                                                                  //Something went wrong with the connection or disconnection request
                     if (connectionAttemptCountdown-- > 0) {                                             //See is we should try another attempt at connecting
                         gatt.connect();                                                                 //Use the existing BluetoothGatt to try connect
                         Log.d(TAG, "Connection attempt failed, trying again");
-                    }
-                    else if (newState == BluetoothProfile.STATE_DISCONNECTED) {                         //Not trying another connection attempt and are not connected
+                    } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {                         //Not trying another connection attempt and are not connected
                         final Intent intent = new Intent(ACTION_BLE_DISCONNECTED);
                         sendBroadcast(intent);
                         Log.i(TAG, "Unexpectedly disconnected from BLE device");
                     }
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Log.e(TAG, "Oops, exception caught in " + e.getStackTrace()[0].getMethodName() + ": " + e.getMessage());
             }
         }
@@ -214,7 +209,7 @@ public class MldpBluetoothService extends Service {
                                         BluetoothGattDescriptor descriptor = gattCharacteristic.getDescriptor(UUID_CHAR_NOTIFICATION_DESCRIPTOR); //Get the descriptor that enables notification on the server
                                         descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE); //Set the value of the descriptor to enable notification
                                         descriptorWriteQueue.add(descriptor);                           //put the descriptor into the write queue
-                                        if(descriptorWriteQueue.size() == 1) {                          //If there is only 1 item in the queue, then write it.  If more than 1, we handle asynchronously in the callback above
+                                        if (descriptorWriteQueue.size() == 1) {                          //If there is only 1 item in the queue, then write it.  If more than 1, we handle asynchronously in the callback above
                                             bluetoothGatt.writeDescriptor(descriptor);                 //Write the descriptor
                                         }
                                     }
@@ -240,7 +235,7 @@ public class MldpBluetoothService extends Service {
                                         BluetoothGattDescriptor descriptor = gattCharacteristic.getDescriptor(UUID_CHAR_NOTIFICATION_DESCRIPTOR); //Get the descriptor that enables notification on the server
                                         descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE); //Set the value of the descriptor to enable notification
                                         descriptorWriteQueue.add(descriptor);                           //put the descriptor into the write queue
-                                        if(descriptorWriteQueue.size() == 1) {                          //If there is only 1 item in the queue, then write it.  If more than 1, we handle asynchronously in the callback above
+                                        if (descriptorWriteQueue.size() == 1) {                          //If there is only 1 item in the queue, then write it.  If more than 1, we handle asynchronously in the callback above
                                             bluetoothGatt.writeDescriptor(descriptor);                 //Write the descriptor
                                         }
                                     }
@@ -267,15 +262,13 @@ public class MldpBluetoothService extends Service {
                             break;
                         }
                     }
-                    if(mldpDataCharacteristic == null && (transparentTxDataCharacteristic == null || transparentRxDataCharacteristic == null)) {
+                    if (mldpDataCharacteristic == null && (transparentTxDataCharacteristic == null || transparentRxDataCharacteristic == null)) {
                         Log.d(TAG, "Did not find MLDP or Transparent service");
                     }
-                }
-                else {
+                } else {
                     Log.w(TAG, "Failed service discovery with status: " + status);
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Log.e(TAG, "Oops, exception caught in " + e.getStackTrace()[0].getMethodName() + ": " + e.getMessage());
             }
         }
@@ -287,14 +280,13 @@ public class MldpBluetoothService extends Service {
                 if (UUID_MLDP_DATA_PRIVATE_CHAR.equals(characteristic.getUuid()) || UUID_TRANSPARENT_TX_PRIVATE_CHAR.equals(characteristic.getUuid())) {                     //See if it is the MLDP data characteristic
                     String dataValue = characteristic.getStringValue(0);                          // Get the data in string format
                     //byte[] dataValue = characteristic.getValue();                                     //Example of getting data in a byte array
-                    //Log.d(TAG, "New notification or indication");
+                    Log.d(TAG, "New notification or indication");
                     final Intent intent = new Intent(ACTION_BLE_DATA_RECEIVED);                         //Create the intent to announce the new data
                     intent.putExtra(INTENT_EXTRA_SERVICE_DATA, dataValue);             //Add the data to the intent
                     intent.putExtra(INTENT_EXTRA_SERVICE_ADDRESS, gatt.getDevice().getAddress());
                     sendBroadcast(intent);                                                              //Broadcast the intent
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Log.e(TAG, "Oops, exception caught in " + e.getStackTrace()[0].getMethodName() + ": " + e.getMessage());
             }
         }
@@ -308,11 +300,10 @@ public class MldpBluetoothService extends Service {
                     Log.w(TAG, "Error writing GATT characteristic with status: " + status);
                 }
                 characteristicWriteQueue.remove();                                                      //Pop the item that we just finishing writing
-                if(characteristicWriteQueue.size() > 0) {                                               //See if there is more to write
+                if (characteristicWriteQueue.size() > 0) {                                               //See if there is more to write
                     bluetoothGatt.writeCharacteristic(characteristicWriteQueue.element());              //Write characteristic
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Log.e(TAG, "Oops, exception caught in " + e.getStackTrace()[0].getMethodName() + ": " + e.getMessage());
             }
         }
@@ -326,11 +317,10 @@ public class MldpBluetoothService extends Service {
                     Log.w(TAG, "Error writing GATT descriptor with status: " + status);
                 }
                 descriptorWriteQueue.remove();                                                          //Pop the item that we just finishing writing
-                if(descriptorWriteQueue.size() > 0) {                                                   //See if there is more to write
+                if (descriptorWriteQueue.size() > 0) {                                                   //See if there is more to write
                     bluetoothGatt.writeDescriptor(descriptorWriteQueue.element());                      //Write descriptor
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Log.e(TAG, "Oops, exception caught in " + e.getStackTrace()[0].getMethodName() + ": " + e.getMessage());
             }
         }
@@ -358,12 +348,11 @@ public class MldpBluetoothService extends Service {
     public boolean isBluetoothRadioEnabled() {
         try {
             if (bluetoothAdapter != null) {                                                             //Check that we have a BluetoothAdapter
-                if (bluetoothAdapter.isEnabled()) {						                                //See if Bluetooth radio is enabled
+                if (bluetoothAdapter.isEnabled()) {                                                        //See if Bluetooth radio is enabled
                     return true;
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Oops, exception caught in " + e.getStackTrace()[0].getMethodName() + ": " + e.getMessage());
         }
         return false;
@@ -372,30 +361,24 @@ public class MldpBluetoothService extends Service {
     // ----------------------------------------------------------------------------------------------------------------
     // Start scan for BLE devices
     // The bleScanCallback method is called each time a device is found during the scan
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void scanStart() {
         try {
-            if (Build.VERSION.SDK_INT >= 21) { //Build.VERSION_CODES.LOLLIPOP) {
-                bluetoothAdapter.getBluetoothLeScanner().startScan(bleScanCallback);                                          //Start scanning with callback method to execute when a new BLE device is found
-//                bluetoothAdapter.startLeScan(uuidScanList, bleScanCallback);                            //Start scanning with callback method to execute when a new BLE device is found
-            }
-            else {
-                bluetoothAdapter.getBluetoothLeScanner().startScan(bleScanCallback);                                          //Start scanning with callback method to execute when a new BLE device is found
-            }
-        }
-        catch (Exception e) {
+            bluetoothAdapter.startLeScan(bleScanCallback);                             //Start scanning with callback method to execute when a new BLE device is found
+
+            //bluetoothAdapter.getBluetoothLeScanner().startScan(bleScanCallback);                                          //Start scanning with callback method to execute when a new BLE device is found
+
+        } catch (Exception e) {
             Log.e(TAG, "Oops, exception caught in " + e.getStackTrace()[0].getMethodName() + ": " + e.getMessage());
         }
     }
 
     // ----------------------------------------------------------------------------------------------------------------
     // Stop scan for BLE devices
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void scanStop() {
         try {
-            bluetoothAdapter.getBluetoothLeScanner().stopScan(bleScanCallback); 		                                        //Stop scanning - callback method indicates which scan to stop
-        }
-        catch (Exception e) {
+            bluetoothAdapter.stopLeScan(bleScanCallback);
+            // bluetoothAdapter.getBluetoothLeScanner().stopScan(bleScanCallback); 		                                        //Stop scanning - callback method indicates which scan to stop
+        } catch (Exception e) {
             Log.e(TAG, "Oops, exception caught in " + e.getStackTrace()[0].getMethodName() + ": " + e.getMessage());
         }
     }
@@ -420,8 +403,7 @@ public class MldpBluetoothService extends Service {
             bluetoothGatt = bluetoothDevice.connectGatt(this, false, bleGattCallback);                           //Directly connect to the device , so set autoConnect to false
             Log.d(TAG, "Attempting to create a new Bluetooth connection");
             return true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Oops, exception caught in " + e.getStackTrace()[0].getMethodName() + ": " + e.getMessage());
             return false;
         }
@@ -437,8 +419,7 @@ public class MldpBluetoothService extends Service {
             }
             connectionAttemptCountdown = 0;                                                             //Stop counting connection attempts
             bluetoothGatt.disconnect();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Oops, exception caught in " + e.getStackTrace()[0].getMethodName() + ": " + e.getMessage());
         }
     }
@@ -450,8 +431,7 @@ public class MldpBluetoothService extends Service {
             BluetoothGattCharacteristic writeDataCharacteristic;
             if (mldpDataCharacteristic != null) {
                 writeDataCharacteristic = mldpDataCharacteristic;
-            }
-            else {
+            } else {
                 writeDataCharacteristic = transparentRxDataCharacteristic;
             }
             if (bluetoothAdapter == null || bluetoothGatt == null || writeDataCharacteristic == null) {
@@ -460,13 +440,12 @@ public class MldpBluetoothService extends Service {
             }
             writeDataCharacteristic.setValue(string);
             characteristicWriteQueue.add(writeDataCharacteristic);                                       //Put the characteristic into the write queue
-            if(characteristicWriteQueue.size() == 1){                                                   //If there is only 1 item in the queue, then write it.  If more than 1, we handle asynchronously in the callback above
+            if (characteristicWriteQueue.size() == 1) {                                                   //If there is only 1 item in the queue, then write it.  If more than 1, we handle asynchronously in the callback above
                 if (!bluetoothGatt.writeCharacteristic(writeDataCharacteristic)) {                       //Request the BluetoothGatt to do the Write
                     Log.d(TAG, "Failed to write characteristic");                                       //Write request was not accepted by the BluetoothGatt
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Oops, exception caught in " + e.getStackTrace()[0].getMethodName() + ": " + e.getMessage());
         }
     }
@@ -476,8 +455,7 @@ public class MldpBluetoothService extends Service {
             BluetoothGattCharacteristic writeDataCharacteristic;
             if (mldpDataCharacteristic != null) {
                 writeDataCharacteristic = mldpDataCharacteristic;
-            }
-            else {
+            } else {
                 writeDataCharacteristic = transparentRxDataCharacteristic;
             }
             if (bluetoothAdapter == null || bluetoothGatt == null || writeDataCharacteristic == null) {
@@ -486,7 +464,7 @@ public class MldpBluetoothService extends Service {
             }
             writeDataCharacteristic.setValue(byteValues);
             characteristicWriteQueue.add(writeDataCharacteristic);                                       //Put the characteristic into the write queue
-            if(characteristicWriteQueue.size() == 1){                                                   //If there is only 1 item in the queue, then write it.  If more than 1, we handle asynchronously in the callback above
+            if (characteristicWriteQueue.size() == 1) {                                                   //If there is only 1 item in the queue, then write it.  If more than 1, we handle asynchronously in the callback above
                 if (!bluetoothGatt.writeCharacteristic(writeDataCharacteristic)) {                       //Request the BluetoothGatt to do the Write
                     Log.d(TAG, "Failed to write characteristic");                                       //Write request was not accepted by the BluetoothGatt
                 }
@@ -501,7 +479,7 @@ public class MldpBluetoothService extends Service {
     // The callback is only called for devices with advertising packets containing a UUID in the uuidScanList[] (i.e. MLDP service).
     // The code that parses the UUID in the advertising packet is only required because the uuidScanList[] does not work for Android 4.X.
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+   /* @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private final ScanCallback bleScanCallback = new ScanCallback() {
 
         @Override
@@ -521,6 +499,53 @@ public class MldpBluetoothService extends Service {
         public void onScanFailed(int errorCode) {
             super.onScanFailed(errorCode);
         }
-    };
+    };*/
 
+    private final BluetoothAdapter.LeScanCallback bleScanCallback = new BluetoothAdapter.LeScanCallback() {
+        @Override
+        public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+            try {
+                if (Build.VERSION.SDK_INT >= 21) { //Build.VERSION_CODES.LOLLIPOP) {
+                    final Intent intent = new Intent(ACTION_BLE_SCAN_RESULT);                           //Create intent to report back the scan result
+                    intent.putExtra(BluetoothDevice.EXTRA_DEVICE, device);                      //Get name and add to intent
+                    sendBroadcast(intent);                                                              //Broadcast the intent
+                } else {
+                    int i = 0;
+                    while (i < scanRecord.length - 1) {
+                        if (scanRecord[i + 1] != 6 && scanRecord[i + 1] != 7) {                         //Look for complete or incomplete list of 128-bit Service Class UUIDs
+                            i += scanRecord[i] + 1;                                                     //Add length of current field to the index to point to the next field
+                        } else {
+                            if (scanRecord[i] == 17) {                                                  //Look for length code of 17 for 1 byte identifier and 16 byte UUID
+                                i += 2;                                                                 //Set index to start of data
+                                if (i + 15 < scanRecord.length) {
+                                    for (byte b : SCAN_RECORD_MLDP_PRIVATE_SERVICE) {                   //Check that the scan record shows the MLDP service UUID
+                                        if (b != scanRecord[i++]) {
+                                            return;                                                     //Don't report discovered device if it does not have the MLDP service
+                                        }
+                                    }
+                                    final Intent intent = new Intent(ACTION_BLE_SCAN_RESULT);           //Create intent to report back the scan result
+                                    //Create intent to report back the scan result
+                                    intent.putExtra(BluetoothDevice.EXTRA_DEVICE, device);
+                                    sendBroadcast(intent);                                              //Broadcast the intent
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                return;
+            } catch (Exception e) {
+                Log.e(TAG, "Oops, exception caught in " + e.getStackTrace()[0].getMethodName() + ": " + e.getMessage());
+            }
+        }
+
+//        @Override
+//        public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+//            final Intent intent = new Intent(ACTION_BLE_SCAN_RESULT);                               //Create intent to report back the scan result
+//            intent.putExtra(INTENT_EXTRA_SERVICE_ADDRESS, device.getAddress());                     //Get address and add to intent
+//            intent.putExtra(INTENT_EXTRA_SERVICE_NAME, device.getName());                           //Get name and add to intent
+//            sendBroadcast(intent);                                                                  //Broadcast the intent
+//            return;
+//        }
+    };
 }
