@@ -76,7 +76,7 @@ public class ChooseFieldActivity extends AppCompatActivity {
     @OnClick(R.id.confirm_button)
     public void onConfirmButtonClick() {
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("mSelectedField", mSelectedField);
+        returnIntent.putExtra("sSelectedField", mSelectedField);
         setResult(Activity.RESULT_OK,returnIntent);
         finish();
     }

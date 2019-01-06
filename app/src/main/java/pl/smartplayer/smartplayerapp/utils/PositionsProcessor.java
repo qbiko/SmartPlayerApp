@@ -80,7 +80,7 @@ public class PositionsProcessor {
         }
 
         requestCount++;
-        if (requestCount == 20) {
+        if (requestCount == 10) {
             requestCount = 0;
             try {
                 sendResults();
@@ -110,7 +110,7 @@ public class PositionsProcessor {
         JSONObject mainObject = new JSONObject();
 
         mainObject.put("teamId", MainActivity.sClubId);
-        mainObject.put("gameId", 2); // TODO: Jak Seba zrobi endpointa...
+        mainObject.put("sGameId", MainActivity.sGameId);
         JSONArray playersArray = new JSONArray();
         mainObject.put("players", playersArray);
         return mainObject;
@@ -122,9 +122,6 @@ public class PositionsProcessor {
 
         JSONParser parser = new JSONParser();
         JSONObject mainObject = (JSONObject) parser.parse(new FileReader(filePath));
-
-        File file = new File(filePath);
-        file.delete();
 
         GameService gameService = ApiClient.getClient().create(GameService.class);
         Call<Void> call = gameService.sendResultsFile(mainObject);

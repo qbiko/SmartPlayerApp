@@ -1,6 +1,9 @@
 package pl.smartplayer.smartplayerapp.main;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -10,6 +13,8 @@ import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -21,6 +26,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import org.json.simple.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,12 +39,18 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 import pl.smartplayer.smartplayerapp.R;
+import pl.smartplayer.smartplayerapp.api.ApiClient;
+import pl.smartplayer.smartplayerapp.api.GameService;
 import pl.smartplayer.smartplayerapp.field.ChooseFieldActivity;
 import pl.smartplayer.smartplayerapp.field.Field;
 import pl.smartplayer.smartplayerapp.player.PlayerListActivity;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CHOOSE_FIELD_REQUEST;
 import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CHOOSE_PLAYER_REQUEST;
+import static pl.smartplayer.smartplayerapp.utils.UtilMethods.bleServiceReceiver;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,11 +62,15 @@ public class MainActivity extends AppCompatActivity {
     public static Map<String, Point> sActivePlayers = new HashMap<>();
     private PlayerOnGameListAdapter mPlayerOnGameListAdapter;
 
-    private Field mSelectedField = null;
     private PlayerOnGame mSelectedPlayer = null;
+    private MldpBluetoothService bleService;
+    public static Field sSelectedField = null;
     public static List<PlayerOnGame> mPlayersOnGameList = new ArrayList<>();
+    //public static final int sClubId = 3;
     public static final int sClubId = 1;
     public static final int sTeamId = 1;
+    public static int sGameId = 0;
+
 
     @BindView(R.id.players_list_view)
     ListView _playersListView;
@@ -107,12 +125,15 @@ public class MainActivity extends AppCompatActivity {
         return sIsGameActive;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
+        registerReceiver(bleServiceReceiver, new IntentFilter() {{
+            addAction(MldpBluetoothService.ACTION_BLE_DATA_RECEIVED);
+        }});
         getSupportActionBar().hide();
         mPlayerOnGameListAdapter = new PlayerOnGameListAdapter(mPlayersOnGameList,
                 this.getApplicationContext());
@@ -182,6 +203,22 @@ public class MainActivity extends AppCompatActivity {
 
         //add button size and padding
         _addPlayerButtonContainer.getLayoutParams().height = playerListContainerHeight * 3 / 10;
+        Intent bleServiceIntent = new Intent(this, MldpBluetoothService.class);                        //Create Intent to bind to the MldpBluetoothService
+        this.bindService(bleServiceIntent, bleServiceConnection, BIND_AUTO_CREATE);                    //Bind to the  service and use bleServiceConnection callbacks for service connect and disconnect
+
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        if(sSelectedField != null)
+            _fieldNameTextView.setText(sSelectedField.getName());
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbindService(bleServiceConnection);
     }
 
     public void repaintImageView() {
@@ -226,16 +263,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent resultIntent) {
         if (requestCode == CHOOSE_FIELD_REQUEST) {
             if (resultCode == RESULT_OK) {
-                mSelectedField = resultIntent.getExtras().getParcelable("mSelectedField");
-                if (mSelectedField != null) {
-                    _fieldNameTextView.setText(mSelectedField.getName());
+                sSelectedField = resultIntent.getExtras().getParcelable("sSelectedField");
+                if (sSelectedField != null) {
+                    _fieldNameTextView.setText(sSelectedField.getName());
                 }
             }
         }
-        if(requestCode == CHOOSE_PLAYER_REQUEST) {
-            if(resultCode == RESULT_OK) {
+        if (requestCode == CHOOSE_PLAYER_REQUEST) {
+            if (resultCode == RESULT_OK) {
                 mSelectedPlayer = resultIntent.getExtras().getParcelable("mSelectedPlayer");
-                if(mSelectedPlayer != null) {
+                if (mSelectedPlayer != null) {
                     mPlayersOnGameList.add(mSelectedPlayer);
                     mPlayerOnGameListAdapter.notifyDataSetChanged();
                 }
@@ -253,8 +290,8 @@ public class MainActivity extends AppCompatActivity {
     public void onPlayerSelected(int position, View view) {
         PlayerOnGame playerOnGame = mPlayerOnGameListAdapter.getPlayerOnGame(position);
 
-        _playerNameTextView.setText(playerOnGame.getPlayer().getFirstName()+" " +
-                ""+playerOnGame.getPlayer().getLastName());
+        _playerNameTextView.setText(playerOnGame.getPlayer().getFirstName() + " " +
+                "" + playerOnGame.getPlayer().getLastName());
         _playerNumberTextView.setText(Integer.toString(playerOnGame.getNumber()));
 
         _playerAgeTextView.setText(Integer.toString(playerOnGame.getPlayer().getAge()));
@@ -264,25 +301,33 @@ public class MainActivity extends AppCompatActivity {
         view.setSelected(true);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @OnClick(R.id.start_stop_event_button)
     public void startGame() {
-        if(mSelectedField == null) {
-            Toast.makeText(getApplicationContext(), R.string.select_field_before_game_start,Toast.LENGTH_LONG).show();
-            return;
+        if (!sIsGameActive) {
+            if (sSelectedField == null) {
+                Toast.makeText(getApplicationContext(), R.string.select_field_before_game_start, Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (mPlayersOnGameList.isEmpty()) {
+                Toast.makeText(getApplicationContext(), R.string.add_player_before_game_start, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            JSONObject object = new JSONObject();
+            object.put("host","host");
+            object.put("opponent","opponent");
+            object.put("teamId",sTeamId);
+            object.put("fieldId",sSelectedField.getDbId());
+
+            GameService gameService = ApiClient.getClient().create(GameService.class);
+            Call<JSONObject> call = gameService.createNewGame(object);
+            call.enqueue(callback);
+
+            RepaintTask repaintTask = new RepaintTask(this);
+            repaintTask.execute();
+
+            sIsGameActive = true;
         }
-        if(mPlayersOnGameList.isEmpty()){
-            Toast.makeText(getApplicationContext(), R.string.add_player_before_game_start, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        sIsGameActive = true;
-
-        // TODO: Jak Seba zrobi endpointa to trzeba tu wywołać createGame i przekazać jakoś gameID dalej (Może do tego BTMock, z tego dalej do PositionsProcessora)
-
-        Thread thread = new Thread(new BTMock(this));
-        thread.start();
-
-        RepaintTask repaintTask = new RepaintTask(this);
-        repaintTask.execute();
     }
 
     @OnClick(R.id.add_player_button)
@@ -290,4 +335,31 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), PlayerListActivity.class);
         startActivityForResult(intent, CHOOSE_PLAYER_REQUEST);
     }
+
+    // ----------------------------------------------------------------------------------------------------------------
+    // Callback for MldpBluetoothService service connection and disconnection
+    private final ServiceConnection bleServiceConnection = new ServiceConnection() {                //Create new ServiceConnection interface to handle service connection and disconnection
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {                //Service MldpBluetoothService has connected
+            MldpBluetoothService.LocalBinder binder = (MldpBluetoothService.LocalBinder) service;
+            bleService = binder.getService();                                                       //Get a reference to the service
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {                            //Service disconnects - should never happen while activity is running
+            bleService = null;                                                                        //Service has no connection
+        }
+    };
+
+    private Callback<JSONObject> callback = new Callback<JSONObject>() {
+        @Override
+        public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+            sGameId = (int) Double.parseDouble(response.body().get("id").toString());
+        }
+
+        @Override
+        public void onFailure(Call<JSONObject> call, Throwable t) {
+
+        }
+    };
 }

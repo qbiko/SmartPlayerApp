@@ -27,7 +27,7 @@ public class Field implements Parcelable {
     @SerializedName("clubId")
     private long clubId;
 
-    Field(String name, String address, boolean isPrivate, Map<String,Map<String, Double>>
+    public Field(String name, String address, boolean isPrivate, Map<String,Map<String, Double>>
             coordinates, long clubId) {
         this.name = name;
         this.address = address;
@@ -77,4 +77,11 @@ public class Field implements Parcelable {
         }
     };
 
+    public Map<String, Map<String, Double>> getCoordinates() {
+        return coordinates;
+    }
+
+    public long getDbId() {
+        return dbId;
+    }
 }

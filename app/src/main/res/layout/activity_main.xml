@@ -268,17 +268,17 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center"
                             android:text="@string/field_text_in_choose_field_panel"
-                            android:textColor="@color/colorPrimaryButtonText"
-                            android:layout_gravity="center"/>
+                            android:textColor="@color/colorPrimaryButtonText" />
 
                         <TextView
                             android:id="@+id/field_name_text_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center"
                             android:text="-"
-                            android:textColor="@color/colorPrimaryButtonText"
-                            android:layout_gravity="center"/>
+                            android:textColor="@color/colorPrimaryButtonText" />
                     </LinearLayout>
 
                 </RelativeLayout>

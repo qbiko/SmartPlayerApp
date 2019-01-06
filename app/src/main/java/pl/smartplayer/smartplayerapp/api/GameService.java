@@ -10,4 +10,8 @@ public interface GameService {
 
     @POST("/api/Game/createPosition")
     Call<Void> sendResultsFile(@Body JSONObject jsonObject);
+
+
+    @POST("/api/Game/createGame")
+    Call<JSONObject> createNewGame(@Body JSONObject jsonObject);
 }
