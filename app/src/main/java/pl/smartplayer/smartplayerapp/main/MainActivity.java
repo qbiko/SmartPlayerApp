@@ -1,6 +1,8 @@
 package pl.smartplayer.smartplayerapp.main;
 
+import android.app.AlertDialog;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -16,8 +18,10 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -41,6 +45,7 @@ import butterknife.OnItemClick;
 import pl.smartplayer.smartplayerapp.R;
 import pl.smartplayer.smartplayerapp.api.ApiClient;
 import pl.smartplayer.smartplayerapp.api.GameService;
+import pl.smartplayer.smartplayerapp.api.TeamService;
 import pl.smartplayer.smartplayerapp.field.ChooseFieldActivity;
 import pl.smartplayer.smartplayerapp.field.Field;
 import pl.smartplayer.smartplayerapp.player.PlayerListActivity;
@@ -66,10 +71,10 @@ public class MainActivity extends AppCompatActivity {
     private MldpBluetoothService bleService;
     public static Field sSelectedField = null;
     public static List<PlayerOnGame> mPlayersOnGameList = new ArrayList<>();
-    //public static final int sClubId = 3;
-    public static final int sClubId = 1;
+    public static int sClubId = 1;
     public static final int sTeamId = 1;
     public static int sGameId = 0;
+    public static String sTeamName = "Moja druzyna";
 
 
     @BindView(R.id.players_list_view)
@@ -131,6 +136,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        sClubId = getIntent().getIntExtra("sClubId", 1);
+
         registerReceiver(bleServiceReceiver, new IntentFilter() {{
             addAction(MldpBluetoothService.ACTION_BLE_DATA_RECEIVED);
         }});
@@ -206,6 +214,32 @@ public class MainActivity extends AppCompatActivity {
         Intent bleServiceIntent = new Intent(this, MldpBluetoothService.class);                        //Create Intent to bind to the MldpBluetoothService
         this.bindService(bleServiceIntent, bleServiceConnection, BIND_AUTO_CREATE);                    //Bind to the  service and use bleServiceConnection callbacks for service connect and disconnect
 
+        TeamService teamService = ApiClient.getClient().create(TeamService.class);
+        Callback<List<Team>> teamCallback = new Callback<List<Team>>() {
+            @Override
+            public void onResponse(Call<List<Team>> call, Response<List<Team>> response) {
+                if (response.isSuccessful()) {
+                    if(!response.body().isEmpty()) {
+                        sTeamName = response.body().get(0).getTeamName();
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), R.string.retrieve_team_name_attempt_finish_failed,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), R.string.retrieve_team_name_attempt_finish_failed,
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Team>> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), R.string.retrieve_team_name_attempt_finish_failed,
+                        Toast.LENGTH_SHORT).show();
+            }
+        };
+        Call<List<Team>> call = teamService.getTeamsByClubId(sClubId);
+        call.enqueue(teamCallback);
     }
 
     @Override
@@ -313,20 +347,48 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), R.string.add_player_before_game_start, Toast.LENGTH_SHORT).show();
                 return;
             }
-            JSONObject object = new JSONObject();
-            object.put("host","host");
-            object.put("opponent","opponent");
-            object.put("teamId",sTeamId);
-            object.put("fieldId",sSelectedField.getDbId());
 
-            GameService gameService = ApiClient.getClient().create(GameService.class);
-            Call<JSONObject> call = gameService.createNewGame(object);
-            call.enqueue(callback);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.enter_opponent_name_dialog_title);
 
-            RepaintTask repaintTask = new RepaintTask(this);
-            repaintTask.execute();
+            final EditText input = new EditText(this);
+            input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            builder.setView(input);
 
-            sIsGameActive = true;
+            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String opponent = input.getText().toString();
+
+                    if(opponent.isEmpty()) {
+                        Toast.makeText(getApplicationContext(), R.string.given_team_name_is_empty, Toast.LENGTH_SHORT)
+                                .show();
+                        return;
+                    }
+
+                    JSONObject object = new JSONObject();
+                    object.put("host",sTeamName);
+                    object.put("opponent",opponent);
+                    object.put("teamId",sTeamId);
+                    object.put("fieldId",sSelectedField.getDbId());
+
+                    GameService gameService = ApiClient.getClient().create(GameService.class);
+                    Call<JSONObject> call = gameService.createNewGame(object);
+                    call.enqueue(callback);
+
+                    RepaintTask repaintTask = new RepaintTask(MainActivity.this);
+                    repaintTask.execute();
+
+                    sIsGameActive = true;
+                }
+            });
+            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            builder.show();
         }
     }
 

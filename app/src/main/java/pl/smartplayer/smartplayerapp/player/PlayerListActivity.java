@@ -51,7 +51,7 @@ import static pl.smartplayer.smartplayerapp.utils.CodeRequests.CONNECT_WITH_DEVI
 import static pl.smartplayer.smartplayerapp.utils.CodeRequests.ENABLE_BT_REQUEST;
 import static pl.smartplayer.smartplayerapp.utils.UtilMethods.updateUIList;
 
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class PlayerListActivity extends AppCompatActivity {
 
     private List<Player> mPlayers = new ArrayList<>();
@@ -286,7 +286,7 @@ public class PlayerListActivity extends AppCompatActivity {
 
     // ----------------------------------------------------------------------------------------------------------------
     // Runnable used by the scanStopHandler to stop the scan
-    private Runnable stopScan = new Runnable() {
+    private final Runnable stopScan = new Runnable() {
         @Override
         public void run() {
             scanStop();

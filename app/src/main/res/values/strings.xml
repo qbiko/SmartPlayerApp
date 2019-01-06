@@ -24,6 +24,13 @@
     <string name="add_player_description">Dodaj zawodnika obrazek</string>
     <string name="select_field_before_game_start">Przed wystartowaniem rozgrywki wybierz boisko!</string>
     <string name="add_player_before_game_start">Przed wystartowaniem rozgrywki dodaj choć jednego zawodnika!</string>
+    <string name="retrieve_team_name_attempt_finish_failed">Nie udało się pobrać nazwy
+        drużyny!</string>
+
+    <!-- Strings related to enter opponent name dialog -->
+    <string name="enter_opponent_name_dialog_title">Podaj nazwę drużyny przeciwnej</string>
+    <string name="ok">Ok</string>
+    <string name="given_team_name_is_empty">Nazwa drużyny przeciwnej nie może być pusta!</string>
 
     <!-- Strings related to player details -->
     <string name="weight">Waga:</string>

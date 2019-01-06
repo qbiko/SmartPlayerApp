@@ -10,11 +10,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.simple.JSONObject;
+
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import pl.smartplayer.smartplayerapp.R;
+import pl.smartplayer.smartplayerapp.api.ApiClient;
+import pl.smartplayer.smartplayerapp.api.TeamService;
+import pl.smartplayer.smartplayerapp.api.UserService;
 import pl.smartplayer.smartplayerapp.main.MainActivity;
+import pl.smartplayer.smartplayerapp.main.Team;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -38,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // disable going back to the MainActivity
+        // disable going back to the LoginActivity
         moveTaskToBack(true);
     }
 
@@ -65,21 +76,37 @@ public class LoginActivity extends AppCompatActivity {
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
-        // TODO: Implement your own authentication logic here.
+        JSONObject emailAndPasswordBody = new JSONObject();
+        emailAndPasswordBody.put("email",email);
+        emailAndPasswordBody.put("password",password);
 
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onLoginSuccess or onLoginFailed
-                        onLoginSuccess();
-                        // onLoginFailed();
-                        progressDialog.dismiss();
-                    }
-                }, 3000);
+        UserService userService = ApiClient.getClient().create(UserService.class);
+        Callback<User> userCallback = new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful()) {
+                    onLoginSuccess(response.body().getClubId());
+                    progressDialog.dismiss();
+                } else {
+                    onLoginFailed();
+                    progressDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                onLoginFailed();
+                progressDialog.dismiss();
+            }
+        };
+
+        Call<User> call = userService.getToken(emailAndPasswordBody);
+        call.enqueue(userCallback);
     }
 
-    public void onLoginSuccess() {
+    public void onLoginSuccess(int clubId) {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.putExtra("sClubId", clubId);
         startActivity(intent);
         _loginButton.setEnabled(true);
         finish();

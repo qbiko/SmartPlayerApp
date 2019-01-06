@@ -115,7 +115,7 @@ public class UtilMethods {
                                         Point2D playerPosition = new Point2D(correctLon, correctLat);
                                         player.setPosition(getPixelPosition(playerPosition));
 
-                                        if(!MainActivity.isGameActive() || MainActivity.sGameId == 0){
+                                        if(MainActivity.isGameActive() && MainActivity.sGameId != 0){
                                             if(player.getCartographicalPosition() == null){
                                                 player.setCartographicalPosition(playerPosition);
                                             } else {
@@ -141,7 +141,7 @@ public class UtilMethods {
 
     private static Point2D getPoint(String pointName) {
         double lat = MainActivity.sSelectedField.getCoordinates().get(pointName).get("lat");
-        double lon = MainActivity.sSelectedField.getCoordinates().get(pointName).get("lon");
+        double lon = MainActivity.sSelectedField.getCoordinates().get(pointName).get("lng");
         return new Point2D(lat,lon);
     }
 
