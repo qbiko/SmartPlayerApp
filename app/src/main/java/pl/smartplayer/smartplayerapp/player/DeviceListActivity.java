@@ -55,8 +55,6 @@ public class DeviceListActivity extends Activity {
                 if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
                     unpairDevice(device);
                 } else {
-                    showToast(getString(R.string.connecting));
-
                     pairDevice(device);
                 }
             }
@@ -87,7 +85,6 @@ public class DeviceListActivity extends Activity {
     private void pairDevice(BluetoothDevice device) {
         try {
             //mCurrentAddressMac = device.getAddress();
-            bleService.disconnect();
             bleService.connect(device.getAddress());
             Intent returnIntent = new Intent();
             returnIntent.putExtra("addressMac", device.getAddress());
@@ -100,10 +97,10 @@ public class DeviceListActivity extends Activity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void unpairDevice(BluetoothDevice device) {
         try {
-            Method method = device.getClass().getMethod("removeBond", (Class[]) null);
-            method.invoke(device, (Object[]) null);
+            bleService.disconnect();
 
         } catch (Exception e) {
             e.printStackTrace();

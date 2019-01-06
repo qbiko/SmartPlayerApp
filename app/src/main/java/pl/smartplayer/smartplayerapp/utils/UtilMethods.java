@@ -80,7 +80,7 @@ public class UtilMethods {
 
                 String serviceAdress = intent.getStringExtra(MldpBluetoothService.INTENT_EXTRA_SERVICE_ADDRESS);
 
-                if (data != null) {
+                if (data != null && MainActivity.sSelectedField != null) {
                     message = message + data;
                     String messages[] = message.split("\\$");
                     if (messages.length > 1) {
