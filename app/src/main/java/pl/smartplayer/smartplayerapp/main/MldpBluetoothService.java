@@ -42,6 +42,7 @@ import java.util.Queue;
 import java.util.UUID;
 
 import android.support.annotation.RequiresApi;
+import android.widget.Toast;
 
 /**
  * Service for handling Bluetooth communication with the RN4020 using the Microchip Low-energy Data Profile, MLDP.
@@ -63,6 +64,7 @@ public class MldpBluetoothService extends Service {
     public final static String ACTION_BLE_CONNECTED = "com.microchip.mldpterminal3.ACTION_BLE_CONNECTED";
     public final static String ACTION_BLE_DISCONNECTED = "com.microchip.mldpterminal3.ACTION_BLE_DISCONNECTED";
     public final static String ACTION_BLE_DATA_RECEIVED = "com.microchip.mldpterminal3.ACTION_BLE_DATA_RECEIVED";
+    public final static String ACTION_CONNECTION_FAILED = "com.microchip.mldpterminal3.ACTION_CONNECTION_FAILED";
 
     //The MLDP UUID will be included in the RN4020 Advertising packet unless a private service and characteristic exists. In that case use the private service UUID here instead.
     private final static byte[] SCAN_RECORD_MLDP_PRIVATE_SERVICE = {0x00, 0x03, 0x00, 0x3a, 0x12, 0x08, 0x1a, 0x02, (byte) 0xdd, 0x07, (byte) 0xe6, 0x58, 0x03, 0x5b, 0x03, 0x00};
@@ -171,7 +173,9 @@ public class MldpBluetoothService extends Service {
                 } else {                                                                                  //Something went wrong with the connection or disconnection request
                     if (connectionAttemptCountdown-- > 0) {                                             //See is we should try another attempt at connecting
                         gatt.connect();                                                                 //Use the existing BluetoothGatt to try connect
-                        Log.d(TAG, "Connection attempt failed, trying again");
+                        Log.d(TAG, "Connection attempt failed, trying again");                         //Not trying another connection attempt and are not connected
+                        final Intent intent = new Intent(ACTION_CONNECTION_FAILED);
+                        sendBroadcast(intent);
                     } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {                         //Not trying another connection attempt and are not connected
                         final Intent intent = new Intent(ACTION_BLE_DISCONNECTED);
                         sendBroadcast(intent);
@@ -279,8 +283,7 @@ public class MldpBluetoothService extends Service {
             try {
                 if (UUID_MLDP_DATA_PRIVATE_CHAR.equals(characteristic.getUuid()) || UUID_TRANSPARENT_TX_PRIVATE_CHAR.equals(characteristic.getUuid())) {                     //See if it is the MLDP data characteristic
                     String dataValue = characteristic.getStringValue(0);                          // Get the data in string format
-                    //byte[] dataValue = characteristic.getValue();                                     //Example of getting data in a byte array
-                    Log.d(TAG, "New notification or indication");
+                    //Log.d(TAG, "New notification or indication");
                     final Intent intent = new Intent(ACTION_BLE_DATA_RECEIVED);                         //Create the intent to announce the new data
                     intent.putExtra(INTENT_EXTRA_SERVICE_DATA, dataValue);             //Add the data to the intent
                     intent.putExtra(INTENT_EXTRA_SERVICE_ADDRESS, gatt.getDevice().getAddress());
@@ -363,8 +366,7 @@ public class MldpBluetoothService extends Service {
     // The bleScanCallback method is called each time a device is found during the scan
     public void scanStart() {
         try {
-            bluetoothAdapter.startLeScan(bleScanCallback);                             //Start scanning with callback method to execute when a new BLE device is found
-
+                bluetoothAdapter.startLeScan(bleScanCallback);
             //bluetoothAdapter.getBluetoothLeScanner().startScan(bleScanCallback);                                          //Start scanning with callback method to execute when a new BLE device is found
 
         } catch (Exception e) {
@@ -376,7 +378,7 @@ public class MldpBluetoothService extends Service {
     // Stop scan for BLE devices
     public void scanStop() {
         try {
-            bluetoothAdapter.stopLeScan(bleScanCallback);
+                bluetoothAdapter.stopLeScan(bleScanCallback);
             // bluetoothAdapter.getBluetoothLeScanner().stopScan(bleScanCallback); 		                                        //Stop scanning - callback method indicates which scan to stop
         } catch (Exception e) {
             Log.e(TAG, "Oops, exception caught in " + e.getStackTrace()[0].getMethodName() + ": " + e.getMessage());
@@ -479,8 +481,8 @@ public class MldpBluetoothService extends Service {
     // The callback is only called for devices with advertising packets containing a UUID in the uuidScanList[] (i.e. MLDP service).
     // The code that parses the UUID in the advertising packet is only required because the uuidScanList[] does not work for Android 4.X.
 
-   /* @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private final ScanCallback bleScanCallback = new ScanCallback() {
+   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private final ScanCallback bleLolipopScanCallback = new ScanCallback() {
 
         @Override
         public void onBatchScanResults(List<ScanResult> results) {
@@ -499,7 +501,7 @@ public class MldpBluetoothService extends Service {
         public void onScanFailed(int errorCode) {
             super.onScanFailed(errorCode);
         }
-    };*/
+    };
 
     private final BluetoothAdapter.LeScanCallback bleScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override

@@ -132,6 +132,8 @@ public class PlayerListActivity extends AppCompatActivity {
 
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MldpBluetoothService.ACTION_BLE_SCAN_RESULT);
+        intentFilter.addAction(MldpBluetoothService.ACTION_CONNECTION_FAILED);
+        intentFilter.addAction(MldpBluetoothService.ACTION_BLE_CONNECTED);
         registerReceiver (bleServiceReceiver, intentFilter);                                        //Register the receiver to receive the scan results broadcast by the service
     }
 
@@ -174,6 +176,7 @@ public class PlayerListActivity extends AppCompatActivity {
 
         Toast.makeText(this,R.string.connecting, Toast.LENGTH_LONG).show();
         if(bleService != null) {                                                                    //Service will not have started when activity first starts but this ensures a scan if resuming from pause
+            bleService.disconnect();
             scanStart();
         }
     }
@@ -242,6 +245,9 @@ public class PlayerListActivity extends AppCompatActivity {
                 Toast.makeText(context,R.string.found_device,Toast.LENGTH_SHORT).show();
 
                 mDeviceList.add(device);
+            } else if (MldpBluetoothService.ACTION_CONNECTION_FAILED.equals(action)){
+                Toast.makeText(context,R.string.connection_failed,Toast.LENGTH_LONG).show();
+                _macAddressTextView.setText("");
             }
         }
     };
