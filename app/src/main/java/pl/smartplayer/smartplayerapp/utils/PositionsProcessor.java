@@ -103,8 +103,8 @@ public class PositionsProcessor {
     private static JSONObject createPositionModelNode(PositionsRequest positionsRequest) {
         JSONObject positionsObject = new JSONObject();
         positionsObject.put("date", positionsRequest.getDateString());
-        positionsObject.put("longitude", positionsRequest.getPoint().x);
-        positionsObject.put("latitude", positionsRequest.getPoint().y);
+        positionsObject.put("longitude", positionsRequest.getPoint().y);
+        positionsObject.put("latitude", positionsRequest.getPoint().x);
         return positionsObject;
     }
 

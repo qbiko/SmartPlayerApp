@@ -93,9 +93,9 @@ public class UtilMethods {
                             if (processingMessagePart[0].equals("GNGGA")) {
                                 Log.d("Odebrano!", "Processing message: " + processingMessage);
 
-                                SimpleDateFormat sdf = new SimpleDateFormat("DD-MM-YYYYHHmmss.SS");
+                                SimpleDateFormat sdf = new SimpleDateFormat("DD-MM-yyyyHHmmss.SS");
 
-                                SimpleDateFormat dmyform = new SimpleDateFormat("DD-MM-YYYY");
+                                SimpleDateFormat dmyform = new SimpleDateFormat("DD-MM-yyyy");
 
                                 Date dateToSend =sdf.parse( dmyform.format(new Date()) + processingMessagePart[1]);
 
