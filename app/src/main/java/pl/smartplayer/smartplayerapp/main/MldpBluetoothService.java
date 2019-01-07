@@ -476,32 +476,6 @@ public class MldpBluetoothService extends Service {
         }
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
-    // Device scan callback. Bluetooth adapter calls this method when a new device is discovered during a scan.
-    // The callback is only called for devices with advertising packets containing a UUID in the uuidScanList[] (i.e. MLDP service).
-    // The code that parses the UUID in the advertising packet is only required because the uuidScanList[] does not work for Android 4.X.
-
-   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private final ScanCallback bleLolipopScanCallback = new ScanCallback() {
-
-        @Override
-        public void onBatchScanResults(List<ScanResult> results) {
-            super.onBatchScanResults(results);
-        }
-
-        @Override
-        public void onScanResult(int callbackType, ScanResult result) {
-            BluetoothDevice device = result.getDevice();
-            final Intent intent = new Intent(ACTION_BLE_SCAN_RESULT);                           //Create intent to report back the scan result
-            intent.putExtra(BluetoothDevice.EXTRA_DEVICE, device);                 //Get address and add to intent
-            sendBroadcast(intent);
-        }
-
-        @Override
-        public void onScanFailed(int errorCode) {
-            super.onScanFailed(errorCode);
-        }
-    };
 
     private final BluetoothAdapter.LeScanCallback bleScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
