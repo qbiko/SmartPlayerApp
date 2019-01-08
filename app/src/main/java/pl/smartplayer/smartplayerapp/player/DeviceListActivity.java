@@ -31,7 +31,7 @@ public class DeviceListActivity extends Activity {
     ListView _devicesListView;
 
     private DeviceListAdapter mAdapter;
-    private ArrayList<BluetoothDevice> mDeviceList;
+    private ArrayList<String> mDeviceList;
     private String mCurrentAddressMac;
     private MldpBluetoothService bleService;
 
@@ -41,7 +41,10 @@ public class DeviceListActivity extends Activity {
         setContentView(R.layout.activity_device_list);
         ButterKnife.bind(this);
 
-        mDeviceList = getIntent().getExtras().getParcelableArrayList("devices");
+        //mDeviceList = getIntent().getExtras().getParcelableArrayList("devices");
+
+        mDeviceList = new ArrayList<>();
+        mDeviceList.add(0, "Urządzenie");
 
         mAdapter = new DeviceListAdapter(this);
 
@@ -50,13 +53,7 @@ public class DeviceListActivity extends Activity {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
             @Override
             public void onPairButtonClick(int position) {
-                BluetoothDevice device = mDeviceList.get(position);
-
-                if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                    unpairDevice(device);
-                } else {
-                    pairDevice(device);
-                }
+                pairDevice();
             }
         });
 
@@ -82,12 +79,12 @@ public class DeviceListActivity extends Activity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    private void pairDevice(BluetoothDevice device) {
+    private void pairDevice() {
         try {
             //mCurrentAddressMac = device.getAddress();
-            bleService.connect(device.getAddress());
+            //bleService.connect("00:1E:C0:68:C8:7A");
             Intent returnIntent = new Intent();
-            returnIntent.putExtra("addressMac", device.getAddress());
+            returnIntent.putExtra("addressMac", "00:1E:C0:68:C8:7A");
             DeviceListActivity.this.setResult(Activity.RESULT_OK, returnIntent);
             finish();
             //Method method = device.getClass().getMethod("createBond", (Class[]) null);

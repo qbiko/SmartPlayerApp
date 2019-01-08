@@ -64,6 +64,9 @@ public class CreateFieldActivity extends AppCompatActivity implements LocationLi
     private ProgressDialog _creatingFieldProgressDialog;
     private FieldService fieldService = null;
 
+    private double lat;
+    private double lon;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,36 +140,61 @@ public class CreateFieldActivity extends AppCompatActivity implements LocationLi
 
     @OnClick(R.id.load_button)
     public void onLoadButtonClick() {
-        if(mLastLocation != null) {
+/*        if(mLastLocation != null) {*/
             int latId = getResources().getIdentifier("lat"+ mCornerCounter, "id", getPackageName());
             EditText latEditText = findViewById(latId);
             int lonId = getResources().getIdentifier("lon"+ mCornerCounter, "id", getPackageName());
             EditText lonEditText = findViewById(lonId);
 
 
-            latEditText.setText(Double.toString(mLastLocation.getLatitude()));
-            lonEditText.setText(Double.toString(mLastLocation.getLongitude()));
+            if(mCornerCounter == 0) {
+                lat = 54.370013;
+                lon = 18.629358;
+                latEditText.setText(String.valueOf(lat));
+                lonEditText.setText(String.valueOf(lon));
+            }
+            else if(mCornerCounter == 1) {
+                lat = 54.370417;
+                lon = 18.630057;
+                latEditText.setText(String.valueOf(lat));
+                lonEditText.setText(String.valueOf(lon));
+            }
+            else if(mCornerCounter == 2) {
+                lat = 54.36978;
+                lon = 18.631139;
+                latEditText.setText(String.valueOf(lat));
+                lonEditText.setText(String.valueOf(lon));
+            }
+            else if(mCornerCounter == 3) {
+                lat = 54.369375;
+                lon = 18.630438;
+                latEditText.setText(String.valueOf(lat));
+                lonEditText.setText(String.valueOf(lon));
+            }
+
             mCurrentLoadedLocation = mLastLocation;
 
             if(mCornerCounter == 3) {
                 _goToCornerTextView.setText(R.string.enter_field_name);
                 _nextButton.setText(R.string.confirm);
             }
-        }
+/*        }
         else {
             Toast.makeText(getApplicationContext(), R.string.wait_until_device_find_location, Toast
                     .LENGTH_SHORT).show();
-        }
+        }*/
     }
 
     @OnClick(R.id.next_button)
     public void onNextButtonClick() {
-        if(mCurrentLoadedLocation !=null) {
+/*        if(mCurrentLoadedLocation !=null) {*/
             Map<String, Double> location = new HashMap<>();
-            location.put("lat", mCurrentLoadedLocation
+/*            location.put("lat", mCurrentLoadedLocation
                     .getLatitude());
             location.put("lng", mCurrentLoadedLocation
-                    .getLongitude());
+                    .getLongitude());*/
+            location.put("lat", lat);
+            location.put("lng", lon);
             mCornersCoordinates.put(getString(getResources().getIdentifier("corner_" +
                             mCornerCounter, "string",
                     getPackageName())), location);
@@ -192,10 +220,10 @@ public class CreateFieldActivity extends AppCompatActivity implements LocationLi
             int backgroundId = getResources().getIdentifier("field_" + mCornerCounter, "drawable",
                     getPackageName());
             _fieldView.setImageResource(backgroundId);
-        } else {
+/*        } else {
             Toast.makeText(getApplicationContext(), R.string.you_must_load_coordinates, Toast
                     .LENGTH_SHORT).show();
-        }
+        }*/
     }
 
     private Callback<Field> callback = new Callback<Field>() {

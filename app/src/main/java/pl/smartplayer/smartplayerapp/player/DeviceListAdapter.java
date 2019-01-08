@@ -18,14 +18,14 @@ import pl.smartplayer.smartplayerapp.R;
 public class DeviceListAdapter extends BaseAdapter{
 
     private Context context;
-    private List<BluetoothDevice> bluetoothDevices;
+    private List<String> bluetoothDevices;
     private OnPairButtonClickListener mListener;
 
     DeviceListAdapter(Context context) {
         this.context = context;
     }
 
-    public void setData(List<BluetoothDevice> data) {
+    public void setData(List<String> data) {
         bluetoothDevices = data;
     }
 
@@ -55,10 +55,10 @@ public class DeviceListAdapter extends BaseAdapter{
         Button connectButton = view.findViewById(R.id.connect_button);
 
 
-        BluetoothDevice device = bluetoothDevices.get(i);
+        //BluetoothDevice device = bluetoothDevices.get(i);
 
-        deviceName.setText(device.getName());
-        deviceAddress.setText(device.getAddress());
+        deviceName.setText("Pejs");
+        deviceAddress.setText("00:1E:C0:68:C8:7A");
         /*connectButton.setText((device.getBondState() == BluetoothDevice.BOND_BONDED) ? "Unpair"
                 : "Pair");*/
         connectButton.setOnClickListener(new View.OnClickListener() {

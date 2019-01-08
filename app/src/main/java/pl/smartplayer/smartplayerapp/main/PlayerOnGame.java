@@ -96,4 +96,5 @@ public class PlayerOnGame implements Parcelable {
             return new PlayerOnGame[size];
         }
     };
+
 }
