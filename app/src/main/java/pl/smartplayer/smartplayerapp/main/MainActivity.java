@@ -142,9 +142,9 @@ public class MainActivity extends AppCompatActivity {
 
         sClubId = getIntent().getIntExtra("sClubId", 1);
 
-        registerReceiver(bleServiceReceiver, new IntentFilter() {{
+      /*  registerReceiver(bleServiceReceiver, new IntentFilter() {{
             addAction(MldpBluetoothService.ACTION_BLE_DATA_RECEIVED);
-        }});
+        }});*/
         getSupportActionBar().hide();
         mPlayerOnGameListAdapter = new PlayerOnGameListAdapter(mPlayersOnGameList,
                 this.getApplicationContext());
@@ -247,6 +247,10 @@ public class MainActivity extends AppCompatActivity {
 
         RepaintTask repaintTask = new RepaintTask(MainActivity.this);
         repaintTask.execute();
+
+
+        Thread thread = new Thread(new BTMock());
+        thread.start();
     }
 
     @Override
@@ -271,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unbindService(bleServiceConnection);
+        //unbindService(bleServiceConnection);
     }
 
     public void repaintImageView() {
@@ -312,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("Repainting","Player:" + player.getNumber() + " X: " + player.getPosition().x + " Y: " + player.getPosition().y);
             }
             if(mSelectedPlayer!= null){
-                _playerDistanceTextView.setText(String.valueOf(mSelectedPlayer.getDistance()));
+                _playerDistanceTextView.setText(String.format("%.3f",mSelectedPlayer.getDistance()));
             }
         }
         _fieldView.setImageDrawable(new BitmapDrawable(getResources(), newBitmap));

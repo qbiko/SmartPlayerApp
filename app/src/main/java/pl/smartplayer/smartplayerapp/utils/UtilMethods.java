@@ -206,7 +206,7 @@ public class UtilMethods {
         return new Point(positionX,positionY);
     }
 
-    private static double measureMeters(double lat1,double lon1,double lat2,double lon2){  // generally used geo measurement function
+    public static double measureMeters(double lat1, double lon1, double lat2, double lon2){  // generally used geo measurement function
         if(lat1 == 0 && lon1 == 0)
             return 0.0;
 
